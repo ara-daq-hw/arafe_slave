@@ -1,6 +1,6 @@
 ;******************************************************************************
 ;* MSP430 C/C++ Codegen                                             PC v4.3.5 *
-;* Date/Time created: Tue Dec 02 10:19:12 2014                                *
+;* Date/Time created: Fri Jan 30 10:52:33 2015                                *
 ;******************************************************************************
 	.compiler_opts --abi=eabi --diag_wrap=off --hll_source=on --mem_model:code=small --mem_model:data=small --object_format=elf --silicon_version=msp --symdebug:dwarf --symdebug:dwarf_version=3 
 
@@ -367,7 +367,7 @@ $C$DW$36	.dwtag  DW_TAG_variable, DW_AT_name("trg_arr")
 	.dwattr $C$DW$36, DW_AT_decl_file("../main.c")
 	.dwattr $C$DW$36, DW_AT_decl_line(0x161)
 	.dwattr $C$DW$36, DW_AT_decl_column(0x0f)
-;	c:\ti\ccsv6\tools\compiler\msp430_4.3.5\bin\opt430.exe --gen_opt_info=2 C:\\Users\\barawn\\AppData\\Local\\Temp\\034642 C:\\Users\\barawn\\AppData\\Local\\Temp\\034644 --opt_info_filename=main.nfo 
+;	c:\ti\ccsv6\tools\compiler\msp430_4.3.5\bin\opt430.exe --gen_opt_info=2 C:\\Users\\barawn\\AppData\\Local\\Temp\\042242 C:\\Users\\barawn\\AppData\\Local\\Temp\\042244 --opt_info_filename=main.nfo 
 	.sect	".text:command_action"
 	.align	2
 	.clink
@@ -716,7 +716,7 @@ $C$DW$58	.dwtag  DW_TAG_variable, DW_AT_name("preamble_match")
 	.dwattr $C$DW$58, DW_AT_TI_symbol_name("preamble_match$1")
 	.dwattr $C$DW$58, DW_AT_type(*$C$DW$T$6)
 	.dwattr $C$DW$58, DW_AT_location[DW_OP_reg14]
-;* r15   assigned to $O$U91
+;* r15   assigned to $O$U93
 ;* r15   assigned to $O$U43
 	.dwcfi	cfa_offset, 2
 	.dwcfi	save_reg_to_mem, 16, -2
@@ -801,19 +801,52 @@ $C$L15:
         MOV.B     #8,&CACTL1+0          ; [] |174| 
 	.dwpsn	file "../main.c",line 229,column 2,is_stmt,isa 0
         MOV.B     #0,r14                ; [] |229| 
-        JMP       $C$L25                ; [] 
-                                          ; [] 
+;* --------------------------------------------------------------------------*
+;*   BEGIN LOOP $C$L16
+;*
+;*   Loop source line                : 231
+;*   Loop closing brace source line  : 284
+;*   Known Minimum Trip Count        : 1
+;*   Known Maximum Trip Count        : 4294967295
+;*   Known Max Trip Count Factor     : 1
 ;* --------------------------------------------------------------------------*
 $C$L16:    
+        MOV.B     r14,r15               ; [] 
+        ADD.W     #rx_preamble+0,r15    ; [] 
+	.dwpsn	file "../main.c",line 232,column 13,is_stmt,isa 0
+        JMP       $C$L18                ; [] |232| 
+                                          ; [] |232| 
+;* --------------------------------------------------------------------------*
+$C$L17:    
+	.dwpsn	file "../main.c",line 237,column 8,is_stmt,isa 0
+        TST.B     r14                   ; [] |237| 
+        JEQ       $C$L19                ; [] |237| 
+                                          ; [] |237| 
+;* --------------------------------------------------------------------------*
+        MOV.W     #rx_preamble+0,r15    ; [] 
+	.dwpsn	file "../main.c",line 238,column 9,is_stmt,isa 0
+        MOV.B     #0,r14                ; [] |238| 
+;* --------------------------------------------------------------------------*
+;*   BEGIN LOOP $C$L18
+;* --------------------------------------------------------------------------*
+$C$L18:    
+	.dwpsn	file "../main.c",line 233,column 7,is_stmt,isa 0
+        CMP.B     @r15,&rx_char+0       ; [] |233| 
+        JNE       $C$L17                ; [] |233| 
+                                          ; [] |233| 
+;* --------------------------------------------------------------------------*
+	.dwpsn	file "../main.c",line 234,column 8,is_stmt,isa 0
+        ADD.W     #1,r15                ; [] |234| 
+        ADD.B     #1,r14                ; [] |234| 
+;* --------------------------------------------------------------------------*
+$C$L19:    
 	.dwpsn	file "../main.c",line 294,column 2,is_stmt,isa 0
         MOV.B     #14,&CACTL1+0         ; [] |294| 
 	.dwpsn	file "../main.c",line 295,column 2,is_stmt,isa 0
         BIS.W     #248,SR               ; [] |295| 
 	.dwpsn	file "../main.c",line 232,column 13,is_stmt,isa 0
-        ADD.W     #1,r15                ; [] |232| 
-        ADD.B     #1,r14                ; [] |232| 
         CMP.B     #3,r14                ; [] |232| 
-        JLO       $C$L26                ; [] |232| 
+        JLO       $C$L18                ; [] |232| 
                                           ; [] |232| 
 ;* --------------------------------------------------------------------------*
 	.dwpsn	file "../main.c",line 244,column 6,is_stmt,isa 0
@@ -830,22 +863,22 @@ $C$L16:
         BIS.W     #248,SR               ; [] |295| 
 	.dwpsn	file "../main.c",line 248,column 6,is_stmt,isa 0
         CMP.B     #255,&rx_char+0       ; [] |248| 
-        JNE       $C$L24                ; [] |248| 
+        JNE       $C$L27                ; [] |248| 
                                           ; [] |248| 
 ;* --------------------------------------------------------------------------*
 	.dwpsn	file "../main.c",line 356,column 2,is_stmt,isa 0
         BIT.B     #65408,&cmd+0         ; [] |356| 
-        JNE       $C$L20                ; [] |356| 
+        JNE       $C$L23                ; [] |356| 
                                           ; [] |356| 
 ;* --------------------------------------------------------------------------*
 	.dwpsn	file "../main.c",line 359,column 9,is_stmt,isa 0
         BIT.B     #64,&cmd+0            ; [] |359| 
-        JNE       $C$L19                ; [] |359| 
+        JNE       $C$L22                ; [] |359| 
                                           ; [] |359| 
 ;* --------------------------------------------------------------------------*
 	.dwpsn	file "../main.c",line 361,column 9,is_stmt,isa 0
         BIT.B     #32,&cmd+0            ; [] |361| 
-        JNE       $C$L17                ; [] |361| 
+        JNE       $C$L20                ; [] |361| 
                                           ; [] |361| 
 ;* --------------------------------------------------------------------------*
 	.dwpsn	file "../main.c",line 364,column 3,is_stmt,isa 0
@@ -856,10 +889,10 @@ $C$DW$60	.dwtag  DW_TAG_TI_branch
         CALL      #command_action       ; [] |364| 
                                           ; [] |364| 
 	.dwpsn	file "../main.c",line 365,column 3,is_stmt,isa 0
-        JMP       $C$L21                ; [] |365| 
+        JMP       $C$L24                ; [] |365| 
                                           ; [] |365| 
 ;* --------------------------------------------------------------------------*
-$C$L17:    
+$C$L20:    
 	.dwpsn	file "../main.c",line 337,column 2,is_stmt,isa 0
         MOV.W     #42325,&FCTL2+0       ; [] |337| 
 	.dwpsn	file "../main.c",line 338,column 2,is_stmt,isa 0
@@ -874,7 +907,7 @@ $C$L17:
         MOV.W     #device_info+0,r15    ; [] |342| 
         MOV.W     #device_info_buffer+0,r14 ; [] |342| 
 ;* --------------------------------------------------------------------------*
-;*   BEGIN LOOP $C$L18
+;*   BEGIN LOOP $C$L21
 ;*
 ;*   Loop source line                : 324
 ;*   Loop closing brace source line  : 326
@@ -882,13 +915,13 @@ $C$L17:
 ;*   Known Maximum Trip Count        : 4294967295
 ;*   Known Max Trip Count Factor     : 1
 ;* --------------------------------------------------------------------------*
-$C$L18:    
+$C$L21:    
 	.dwpsn	file "../main.c",line 325,column 3,is_stmt,isa 0
         ADD.W     #1,r15                ; [] |325| 
         MOV.B     @r14+,-1(r15)         ; [] |325| 
 	.dwpsn	file "../main.c",line 324,column 2,is_stmt,isa 0
         BIT.W     #16,r14               ; [] |324| 
-        JNE       $C$L18                ; [] |324| 
+        JNE       $C$L21                ; [] |324| 
                                           ; [] |324| 
 ;* --------------------------------------------------------------------------*
 	.dwpsn	file "../main.c",line 343,column 2,is_stmt,isa 0
@@ -896,33 +929,33 @@ $C$L18:
 	.dwpsn	file "../main.c",line 344,column 2,is_stmt,isa 0
         MOV.W     #42256,&FCTL3+0       ; [] |344| 
 	.dwpsn	file "../main.c",line 345,column 1,is_stmt,isa 0
-        JMP       $C$L22                ; [] |345| 
+        JMP       $C$L25                ; [] |345| 
                                           ; [] |345| 
 ;* --------------------------------------------------------------------------*
-$C$L19:    
+$C$L22:    
 	.dwpsn	file "../main.c",line 360,column 3,is_stmt,isa 0
         MOV.B     &cmd+0,r15            ; [] |360| 
         AND.W     #15,r15               ; [] |360| 
         MOV.B     device_info+0(r15),&ack_byte+0 ; [] |360| 
 	.dwpsn	file "../main.c",line 361,column 2,is_stmt,isa 0
-        JMP       $C$L22                ; [] |361| 
+        JMP       $C$L25                ; [] |361| 
                                           ; [] |361| 
 ;* --------------------------------------------------------------------------*
-$C$L20:    
+$C$L23:    
 	.dwpsn	file "../main.c",line 357,column 3,is_stmt,isa 0
         MOV.B     &cmd+0,r15            ; [] |357| 
         AND.W     #15,r15               ; [] |357| 
         MOV.B     &arg+0,device_info_buffer+0(r15) ; [] |357| 
 ;* --------------------------------------------------------------------------*
-$C$L21:    
+$C$L24:    
 	.dwpsn	file "../main.c",line 358,column 3,is_stmt,isa 0
         MOV.B     #0,&ack_byte+0        ; [] |358| 
 ;* --------------------------------------------------------------------------*
-$C$L22:    
+$C$L25:    
         MOV.W     #tx_preamble+3,r15    ; [] 
         MOV.W     #3,r14                ; [] 
 ;* --------------------------------------------------------------------------*
-;*   BEGIN LOOP $C$L23
+;*   BEGIN LOOP $C$L26
 ;*
 ;*   Loop source line                : 315
 ;*   Loop closing brace source line  : 317
@@ -930,7 +963,7 @@ $C$L22:
 ;*   Known Maximum Trip Count        : 3
 ;*   Known Max Trip Count Factor     : 3
 ;* --------------------------------------------------------------------------*
-$C$L23:    
+$C$L26:    
 	.dwpsn	file "../main.c",line 316,column 3,is_stmt,isa 0
         MOV.B     @r15,r12              ; [] |316| 
 $C$DW$61	.dwtag  DW_TAG_TI_branch
@@ -942,7 +975,7 @@ $C$DW$61	.dwtag  DW_TAG_TI_branch
 	.dwpsn	file "../main.c",line 315,column 31,is_stmt,isa 0
         SUB.W     #1,r15                ; [] |315| 
         SUB.W     #1,r14                ; [] |315| 
-        JNE       $C$L23                ; [] |315| 
+        JNE       $C$L26                ; [] |315| 
                                           ; [] |315| 
 ;* --------------------------------------------------------------------------*
 	.dwpsn	file "../main.c",line 318,column 2,is_stmt,isa 0
@@ -970,36 +1003,12 @@ $C$DW$64	.dwtag  DW_TAG_TI_branch
         CALL      #tx_char              ; [] |320| 
                                           ; [] |320| 
 ;* --------------------------------------------------------------------------*
-$C$L24:    
+$C$L27:    
 	.dwpsn	file "../main.c",line 249,column 6,is_stmt,isa 0
         MOV.B     #0,r14                ; [] |249| 
-;* --------------------------------------------------------------------------*
-;*   BEGIN LOOP $C$L25
-;* --------------------------------------------------------------------------*
-$C$L25:    
-        MOV.B     r14,r15               ; [] 
-        ADD.W     #rx_preamble+0,r15    ; [] 
-;* --------------------------------------------------------------------------*
-;*   BEGIN LOOP $C$L26
-;*
-;*   Loop source line                : 232
-;*   Loop closing brace source line  : 243
-;*   Known Minimum Trip Count        : 1
-;*   Known Maximum Trip Count        : 4294967295
-;*   Known Max Trip Count Factor     : 1
-;* --------------------------------------------------------------------------*
-$C$L26:    
-	.dwpsn	file "../main.c",line 233,column 7,is_stmt,isa 0
-        CMP.B     @r15,&rx_char+0       ; [] |233| 
-        JEQ       $C$L16                ; [] |233| 
-                                          ; [] |233| 
-;* --------------------------------------------------------------------------*
-        MOV.W     #rx_preamble+0,r15    ; [] 
-	.dwpsn	file "../main.c",line 238,column 9,is_stmt,isa 0
-        MOV.B     #0,r14                ; [] |238| 
-	.dwpsn	file "../main.c",line 239,column 8,is_stmt,isa 0
-        JMP       $C$L26                ; [] |239| 
-                                          ; [] |239| 
+	.dwpsn	file "../main.c",line 231,column 12,is_stmt,isa 0
+        JMP       $C$L16                ; [] |231| 
+                                          ; [] |231| 
 	.dwattr $C$DW$52, DW_AT_TI_end_file("../main.c")
 	.dwattr $C$DW$52, DW_AT_TI_end_line(0x11d)
 	.dwattr $C$DW$52, DW_AT_TI_end_column(0x01)

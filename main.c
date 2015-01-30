@@ -234,7 +234,7 @@ void main(void) {
     			preamble_match++;
     			get_char();
     		} else {
-    			if (rx_preamble_len) {
+    			if (preamble_match) {
     				preamble_match = 0;
     			} else {
     				get_char();

@@ -49,7 +49,7 @@ static void device_init() is called from 1 sites in this file.
 	simple_copy_16() (1 times)
 	command_action() (1 times)
 
-static void get_char() is called from 3 sites in this file.
+static void get_char() is called from 4 sites in this file.
     It appears to be inlineable (size = 6 units)
     It has 3 non-trivial scope blocks nested 3 deep.
     It calls these functions:
@@ -67,7 +67,7 @@ extern void main() is called from 0 sites in this file.
     It has 3 non-trivial scope blocks nested 3 deep.
     It calls these functions:
 	handle_command() (1 times)
-	get_char() (3 times)
+	get_char() (4 times)
 	comparator_init() (1 times)
 	pin_init() (1 times)
 	clock_init() (1 times)
@@ -169,7 +169,7 @@ extern void main() is called from 0 sites in this file.
 	clock_init() (1 times)
 	pin_init() (1 times)
 	comparator_init() (1 times)
-	get_char() (3 times)
+	get_char() (4 times)
 	handle_command() (1 times)
 
 == END OF INFO OUTPUT==
