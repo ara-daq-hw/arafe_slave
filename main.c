@@ -40,7 +40,7 @@ const char tx_preamble[] = "!S!";
 // Byte 11: ch3_trg
 #pragma DATA_SECTION(device_info, ".infoC")
 const uint8_t device_info[16]= {   0x00, 0x00,
-								   0xFF, 0xFF,
+								   0x7F, 0xFF,
 								   0x00, 0x00,
 								   0x00, 0x00,
 								   0x00, 0x00,
@@ -53,9 +53,9 @@ const uint8_t device_info[16]= {   0x00, 0x00,
 static uint8_t device_info_buffer[16];
 
 #pragma NOINIT(cmd)
-static uint8_t cmd;
+uint8_t cmd;
 #pragma NOINIT(arg)
-static uint8_t arg;
+uint8_t arg;
 
 static void clock_init();
 static void comparator_init();
@@ -195,8 +195,8 @@ static void pin_init() {
     // So:
     // Port 1 setup:
     // P1DIR  = 8'b1101 1010 = 0xDA (when COMMS_TX on), 8'b11001010 = 0xCA  (when COMMS_TX off).
-    // P1SEL  = 8'b0001 1000 = 0x18
-    // P1SEL2 = 8'b0000 1000 = 0x08
+    // P1SEL  = 8'b0001 0000 = 0x10
+    // P1SEL2 = 8'b0001 0000 = 0x00
     // P1OUT  = 0x00
     // Port 2 and 3 are by default all outputs except P3.1.
     // P2DIR = 0xFF
@@ -207,10 +207,10 @@ static void pin_init() {
     // P3SEL = 0x00
     // P3SEL2 = 0x00
     // P3OUT = 0xFF
-    P1DIR = 0xCA;
-    P1SEL = 0x18;
+    P1DIR = 0xDA;
+    P1SEL = 0x08;
     P1SEL2 = 0x08;
-
+    P2SEL = 0x00;
     device_init();
 }
 
@@ -297,11 +297,11 @@ static void get_char() {
 
 static void tx_char(unsigned char tx) {
 	// Stop the counter, and clear it.
-	TACTL = 0;
-	TACCR0 = UART_TBIT;
-	TACCTL0 = CCIE;
+	TA1CTL = 0;
+	TA1CCR0 = UART_TBIT;
+	TA1CCTL0 = CCIE;
 	// now set it off running.
-	TACTL = TASSEL_2 + ID_0 + MC_1 + TACLR;
+	TA1CTL = TASSEL_2 + ID_3 + MC_1 + TACLR;
 	// Upshift by 1 (the start bit is 0), plus
 	// add the stop bit (bit 10).
 	tx_char_pending = (tx << 1) | (0x200);
@@ -312,8 +312,13 @@ static void tx_char(unsigned char tx) {
 static void command_ack() {
 	uint8_t counter;
 
+	// Put a bit of a pause here to let the threshold settle.
+	// This shouldn't be necessary in the end, but I don't think
+	// it makes much of a difference.
+	// 10 ms pause.
+	__delay_cycles(80000);
 	for (counter=tx_preamble_len;counter!=0;counter--) {
-		tx_char(tx_preamble[counter]);
+		tx_char(tx_preamble[counter-1]);
 	}
 	tx_char(cmd);
 	tx_char(ack_byte);

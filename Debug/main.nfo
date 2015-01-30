@@ -19,10 +19,11 @@ static void clock_six_bits() is called from 1 sites in this file.
 	<NONE>
 
 static void command_ack() is called from 1 sites in this file.
-    It appears to be inlineable (size = 21 units)
+    It appears to be inlineable (size = 45 units)
     It has 3 non-trivial scope blocks nested 3 deep.
     It calls these functions:
 	tx_char() (4 times)
+	__delay_cycles() (1 times)
 
 static void command_action() is called from 2 sites in this file.
     It appears to be inlineable (size = 106 units)
@@ -73,7 +74,7 @@ extern void main() is called from 0 sites in this file.
 	clock_init() (1 times)
 
 static void pin_init() is called from 1 sites in this file.
-    It appears to be inlineable (size = 11 units)
+    It appears to be inlineable (size = 14 units)
     It has 3 non-trivial scope blocks nested 3 deep.
     It calls these functions:
 	device_init() (1 times)
@@ -95,8 +96,6 @@ Global variable is not referenced in this file:
 
 
 Address of global variable is never taken:
-	static unsigned char arg
-	static unsigned char cmd
 	static unsigned char ack_byte
 
 
@@ -135,11 +134,9 @@ Inlineable function will be suppressed: device_info_flash()
 Making this function inlineable: command_ack()
 Inlineable function will be suppressed: command_ack()
 
-Making this function inlineable: handle_command()
-Inlineable function will be suppressed: handle_command()
-
 These external functions are called but not defined here:
 	__bis_SR_register()
+	__delay_cycles()
 
 
 		======= End file-level Analysis =======
@@ -160,6 +157,16 @@ static void tx_char() is called from 4 sites in this file.
     It has 3 non-trivial scope blocks nested 3 deep.
     It calls these functions:
 	<NONE>
+
+==============================================================================
+
+static void handle_command() is called from 1 sites in this file.
+    It appears to be inlineable (size = 47 units)
+    It has 3 non-trivial scope blocks nested 3 deep.
+    It calls these functions:
+	command_action() (1 times)
+	device_info_flash() (1 times)
+	command_ack() (1 times)
 
 ==============================================================================
 
