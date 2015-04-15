@@ -1,6 +1,6 @@
 ;******************************************************************************
 ;* MSP430 C/C++ Codegen                                             PC v4.3.5 *
-;* Date/Time created: Wed Apr 15 12:50:14 2015                                *
+;* Date/Time created: Wed Apr 15 14:48:03 2015                                *
 ;******************************************************************************
 	.compiler_opts --abi=eabi --diag_wrap=off --hll_source=on --mem_model:code=small --mem_model:data=small --object_format=elf --silicon_version=msp --symdebug:dwarf --symdebug:dwarf_version=3 
 
@@ -378,14 +378,16 @@ $C$DW$42	.dwtag  DW_TAG_variable, DW_AT_name("device_info")
 	.dwattr $C$DW$42, DW_AT_decl_file("../main.c")
 	.dwattr $C$DW$42, DW_AT_decl_line(0x2a)
 	.dwattr $C$DW$42, DW_AT_decl_column(0x0f)
+	.global	device_info_buffer
 device_info_buffer:	.usect	".TI.noinit",16,16
 $C$DW$43	.dwtag  DW_TAG_variable, DW_AT_name("device_info_buffer")
 	.dwattr $C$DW$43, DW_AT_TI_symbol_name("device_info_buffer")
-	.dwattr $C$DW$43, DW_AT_type(*$C$DW$T$46)
 	.dwattr $C$DW$43, DW_AT_location[DW_OP_addr device_info_buffer]
+	.dwattr $C$DW$43, DW_AT_type(*$C$DW$T$46)
+	.dwattr $C$DW$43, DW_AT_external
 	.dwattr $C$DW$43, DW_AT_decl_file("../main.c")
 	.dwattr $C$DW$43, DW_AT_decl_line(0x35)
-	.dwattr $C$DW$43, DW_AT_decl_column(0x10)
+	.dwattr $C$DW$43, DW_AT_decl_column(0x09)
 	.global	cmd
 cmd:	.usect	".TI.noinit",1,1
 $C$DW$44	.dwtag  DW_TAG_variable, DW_AT_name("cmd")
@@ -406,7 +408,7 @@ $C$DW$45	.dwtag  DW_TAG_variable, DW_AT_name("arg")
 	.dwattr $C$DW$45, DW_AT_decl_file("../main.c")
 	.dwattr $C$DW$45, DW_AT_decl_line(0x3a)
 	.dwattr $C$DW$45, DW_AT_decl_column(0x09)
-;	c:\ti\ccsv6\tools\compiler\msp430_4.3.5\bin\opt430.exe --gen_opt_info=2 C:\\Users\\barawn\\AppData\\Local\\Temp\\093562 C:\\Users\\barawn\\AppData\\Local\\Temp\\093564 --opt_info_filename=main.nfo 
+;	c:\ti\ccsv6\tools\compiler\msp430_4.3.5\bin\opt430.exe --gen_opt_info=2 C:\\Users\\barawn\\AppData\\Local\\Temp\\049762 C:\\Users\\barawn\\AppData\\Local\\Temp\\049764 --opt_info_filename=main.nfo 
 	.sect	".text:command_action"
 	.align	2
 	.clink
@@ -435,9 +437,9 @@ $C$DW$46	.dwtag  DW_TAG_subprogram, DW_AT_name("command_action")
 ;*****************************************************************************
 command_action:
 ;* --------------------------------------------------------------------------*
-;* r14   assigned to $O$K57
-;* r15   assigned to $O$K59
-;* r13   assigned to $O$U47
+;* r14   assigned to $O$C1
+;* r13   assigned to $O$K57
+;* r14   assigned to $O$K59
 ;* r10   assigned to clk_port
 $C$DW$47	.dwtag  DW_TAG_variable, DW_AT_name("clk_port")
 	.dwattr $C$DW$47, DW_AT_TI_symbol_name("clk_port")
@@ -448,21 +450,21 @@ $C$DW$48	.dwtag  DW_TAG_variable, DW_AT_name("data_port")
 	.dwattr $C$DW$48, DW_AT_TI_symbol_name("data_port")
 	.dwattr $C$DW$48, DW_AT_type(*$C$DW$T$51)
 	.dwattr $C$DW$48, DW_AT_location[DW_OP_reg11]
-;* r13   assigned to ch
+;* r15   assigned to ch
 $C$DW$49	.dwtag  DW_TAG_variable, DW_AT_name("ch")
 	.dwattr $C$DW$49, DW_AT_TI_symbol_name("ch")
 	.dwattr $C$DW$49, DW_AT_type(*$C$DW$T$25)
-	.dwattr $C$DW$49, DW_AT_location[DW_OP_reg13]
+	.dwattr $C$DW$49, DW_AT_location[DW_OP_reg15]
 ;* r9    assigned to counter
 $C$DW$50	.dwtag  DW_TAG_variable, DW_AT_name("counter")
 	.dwattr $C$DW$50, DW_AT_TI_symbol_name("counter")
 	.dwattr $C$DW$50, DW_AT_type(*$C$DW$T$10)
 	.dwattr $C$DW$50, DW_AT_location[DW_OP_reg9]
-;* r15   assigned to addr
+;* r14   assigned to addr
 $C$DW$51	.dwtag  DW_TAG_variable, DW_AT_name("addr")
 	.dwattr $C$DW$51, DW_AT_TI_symbol_name("addr")
 	.dwattr $C$DW$51, DW_AT_type(*$C$DW$T$51)
-	.dwattr $C$DW$51, DW_AT_location[DW_OP_reg15]
+	.dwattr $C$DW$51, DW_AT_location[DW_OP_reg14]
 ;* r15   assigned to addr
 $C$DW$52	.dwtag  DW_TAG_variable, DW_AT_name("addr")
 	.dwattr $C$DW$52, DW_AT_TI_symbol_name("addr")
@@ -482,8 +484,8 @@ $C$DW$53	.dwtag  DW_TAG_variable, DW_AT_name("addr")
 	.dwcfi	cfa_offset, 6
 	.dwcfi	save_reg_to_mem, 9, -6
 	.dwpsn	file "../main.c",line 325,column 2,is_stmt,isa 0
-        MOV.W     #3,r13                ; [] |325| 
-        AND.B     &cmd+0,r13            ; [] |325| 
+        MOV.W     #3,r15                ; [] |325| 
+        AND.B     &cmd+0,r15            ; [] |325| 
 	.dwpsn	file "../main.c",line 328,column 2,is_stmt,isa 0
         BIT.B     #8,&cmd+0             ; [] |328| 
         JEQ       $C$L4                 ; [] |328| 
@@ -495,9 +497,9 @@ $C$DW$53	.dwtag  DW_TAG_variable, DW_AT_name("addr")
                                           ; [] |338| 
 ;* --------------------------------------------------------------------------*
 	.dwpsn	file "../main.c",line 339,column 3,is_stmt,isa 0
-        MOV.B     r13,r15               ; [] |339| 
-        RLA.W     r15                   ; [] |339| 
-        MOV.W     enable_port_arr+0(r15),r15 ; [] |339| 
+        MOV.B     r15,r14               ; [] |339| 
+        RLA.W     r14                   ; [] |339| 
+        MOV.W     enable_port_arr+0(r14),r14 ; [] |339| 
 	.dwpsn	file "../main.c",line 340,column 3,is_stmt,isa 0
         TST.B     &arg+0                ; [] |340| 
         JNE       $C$L1                 ; [] |340| 
@@ -505,8 +507,8 @@ $C$DW$53	.dwtag  DW_TAG_variable, DW_AT_name("addr")
 ;* --------------------------------------------------------------------------*
 	.dwcfi	remember_state
 	.dwpsn	file "../main.c",line 341,column 8,is_stmt,isa 0
-        MOV.B     r13,r13               ; [] |341| 
-        AND.B     enable_bit_arr+0(r13),0(r15) ; [] |341| 
+        MOV.B     r15,r15               ; [] |341| 
+        AND.B     enable_bit_arr+0(r15),0(r14) ; [] |341| 
 $C$DW$54	.dwtag  DW_TAG_TI_branch
 	.dwattr $C$DW$54, DW_AT_low_pc(0x00)
 	.dwattr $C$DW$54, DW_AT_TI_return
@@ -517,8 +519,8 @@ $C$DW$54	.dwtag  DW_TAG_TI_branch
 $C$L1:    
 	.dwcfi	remember_state
 	.dwpsn	file "../main.c",line 340,column 12,is_stmt,isa 0
-        MOV.B     r13,r13               ; [] |340| 
-        OR.B      enable_bit_arr+0(r13),0(r15) ; [] |340| 
+        MOV.B     r15,r15               ; [] |340| 
+        OR.B      enable_bit_arr+0(r15),0(r14) ; [] |340| 
 $C$DW$55	.dwtag  DW_TAG_TI_branch
 	.dwattr $C$DW$55, DW_AT_low_pc(0x00)
 	.dwattr $C$DW$55, DW_AT_TI_return
@@ -528,7 +530,7 @@ $C$DW$55	.dwtag  DW_TAG_TI_branch
 ;* --------------------------------------------------------------------------*
 $C$L2:    
 	.dwpsn	file "../main.c",line 344,column 3,is_stmt,isa 0
-        BIT.B     #1,r13                ; [] |344| 
+        BIT.B     #1,r15                ; [] |344| 
         JEQ       $C$L7                 ; [] |344| 
                                           ; [] |344| 
 ;* --------------------------------------------------------------------------*
@@ -562,22 +564,21 @@ $C$DW$57	.dwtag  DW_TAG_TI_branch
 ;* --------------------------------------------------------------------------*
 $C$L4:    
 	.dwpsn	file "../main.c",line 330,column 3,is_stmt,isa 0
-        MOV.B     &cmd+0,r15            ; [] |330| 
-        AND.W     #7,r15                ; [] |330| 
-        RLA.W     r15                   ; [] |330| 
-        MOV.W     att_port_arr+0(r15),r12 ; [] |330| 
+        MOV.B     &cmd+0,r14            ; [] |330| 
+        AND.W     #7,r14                ; [] |330| 
+        MOV.W     r14,r13               ; [] |330| 
+        RLA.W     r13                   ; [] |330| 
+        MOV.W     att_port_arr+0(r13),r12 ; [] |330| 
 	.dwpsn	file "../main.c",line 331,column 3,is_stmt,isa 0
-        MOV.B     r13,r13               ; [] |331| 
-        ADD.W     #att_bit_arr+0,r13    ; [] |331| 
-        BIC.B     @r13,0(r12)           ; [] |331| 
+        BIC.B     att_bit_arr+0(r14),0(r12) ; [] |331| 
 	.dwpsn	file "../main.c",line 356,column 2,is_stmt,isa 0
         MOV.W     &spiclk_port+0,r10    ; [] |356| 
 	.dwpsn	file "../main.c",line 357,column 2,is_stmt,isa 0
         MOV.W     &spidata_port+0,r11   ; [] |357| 
-        MOV.B     &spiclk_bit+0,r14     ; [] 
+        MOV.B     &spiclk_bit+0,r13     ; [] 
+        INV.W     r13                   ; [] 
+        MOV.B     &spidata_bit+0,r14    ; [] 
         INV.W     r14                   ; [] 
-        MOV.B     &spidata_bit+0,r15    ; [] 
-        INV.W     r15                   ; [] 
         MOV.W     #6,r9                 ; [] 
 ;* --------------------------------------------------------------------------*
 ;*   BEGIN LOOP $C$L5
@@ -590,9 +591,9 @@ $C$L4:
 ;* --------------------------------------------------------------------------*
 $C$L5:    
 	.dwpsn	file "../main.c",line 360,column 3,is_stmt,isa 0
-        AND.B     r14,0(r10)            ; [] |360| 
+        AND.B     r13,0(r10)            ; [] |360| 
 	.dwpsn	file "../main.c",line 361,column 3,is_stmt,isa 0
-        AND.B     r15,0(r11)            ; [] |361| 
+        AND.B     r14,0(r11)            ; [] |361| 
 	.dwpsn	file "../main.c",line 362,column 3,is_stmt,isa 0
         BIT.B     #32,&arg+0            ; [] |362| 
         JEQ       $C$L6                 ; [] |362| 
@@ -612,11 +613,12 @@ $C$L6:
                                           ; [] |359| 
 ;* --------------------------------------------------------------------------*
 	.dwpsn	file "../main.c",line 366,column 2,is_stmt,isa 0
-        AND.B     r14,0(r10)            ; [] |366| 
+        AND.B     r13,0(r10)            ; [] |366| 
 	.dwpsn	file "../main.c",line 367,column 2,is_stmt,isa 0
-        AND.B     r15,0(r11)            ; [] |367| 
+        AND.B     r14,0(r11)            ; [] |367| 
 	.dwpsn	file "../main.c",line 336,column 3,is_stmt,isa 0
-        OR.B      @r13,0(r12)           ; [] |336| 
+        MOV.B     r15,r15               ; [] |336| 
+        OR.B      att_bit_arr+0(r15),0(r12) ; [] |336| 
 ;* --------------------------------------------------------------------------*
 $C$L7:    
 $C$DW$58	.dwtag  DW_TAG_TI_branch
@@ -738,7 +740,7 @@ $C$DW$66	.dwtag  DW_TAG_variable, DW_AT_name("dst")
 	.dwattr $C$DW$66, DW_AT_TI_symbol_name("dst")
 	.dwattr $C$DW$66, DW_AT_type(*$C$DW$T$26)
 	.dwattr $C$DW$66, DW_AT_location[DW_OP_reg15]
-;* r15   assigned to $O$U51
+;* r15   assigned to $O$U50
 	.dwcfi	cfa_offset, 2
 	.dwcfi	save_reg_to_mem, 16, -2
 	.dwpsn	file "../main.c",line 302,column 2,is_stmt,isa 0
@@ -795,7 +797,7 @@ $C$L9:
         ADD.W     #1,r15                ; [] |274| 
         MOV.B     @r14+,-1(r15)         ; [] |274| 
 	.dwpsn	file "../main.c",line 273,column 2,is_stmt,isa 0
-        BIT.W     #16,r14               ; [] |273| 
+        BIT.W     #15,r14               ; [] |273| 
         JNE       $C$L9                 ; [] |273| 
                                           ; [] |273| 
 ;* --------------------------------------------------------------------------*
@@ -1014,7 +1016,7 @@ $C$L16:
         ADD.W     #1,r14                ; [] |274| 
         MOV.B     @r15+,-1(r14)         ; [] |274| 
 	.dwpsn	file "../main.c",line 273,column 2,is_stmt,isa 0
-        BIT.W     #16,r15               ; [] |273| 
+        BIT.W     #15,r15               ; [] |273| 
         JNE       $C$L16                ; [] |273| 
                                           ; [] |273| 
 ;* --------------------------------------------------------------------------*

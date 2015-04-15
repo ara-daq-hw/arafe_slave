@@ -26,7 +26,7 @@ static void command_ack() is called from 1 sites in this file.
 	__delay_cycles() (1 times)
 
 static void command_action() is called from 2 sites in this file.
-    It appears to be inlineable (size = 90 units)
+    It appears to be inlineable (size = 93 units)
     It has 3 non-trivial scope blocks nested 3 deep.
     It calls these functions:
 	clock_six_bits() (1 times)
@@ -145,7 +145,7 @@ These external functions are called but not defined here:
 ==============================================================================
 
 static void command_action() is called from 2 sites in this file.
-    It appears to be inlineable (size = 90 units)
+    It appears to be inlineable (size = 93 units)
     It has 3 non-trivial scope blocks nested 3 deep.
     It calls these functions:
 	clock_six_bits() (1 times)

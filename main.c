@@ -50,7 +50,7 @@ const uint8_t device_info[16]= {   0x00, 0x00,
 
 #pragma NOINIT(device_info_buffer)
 #pragma DATA_ALIGN(device_info_buffer, 16)
-static uint8_t device_info_buffer[16];
+uint8_t device_info_buffer[16];
 
 #pragma NOINIT(cmd)
 uint8_t cmd;
@@ -272,7 +272,7 @@ static void command_ack() {
 static void simple_copy_16(uint8_t *dst, const uint8_t *src) {
 	do {
 		*dst++ = *src++;
-	} while (((uint16_t) src) & 0x10);
+	} while (((uint16_t) src) & 0xF);
 //	uint8_t count;
 //	for (count=16;count;count--) {
 //		*dst++ = *src++;
@@ -328,7 +328,7 @@ static void command_action() {
 	if (!(cmd & 0x08)) {
 		// Commands 0-7 are sig/trig set commands.
 		addr = att_port_arr[cmd & 0x7];
-		*addr &= ~att_bit_arr[ch];
+		*addr &= ~att_bit_arr[cmd & 0x7];
 		// At this point we've lowered the chip select we want.
 		// So now clock the data.
 		clock_six_bits();
