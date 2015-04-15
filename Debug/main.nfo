@@ -13,20 +13,20 @@ static void clock_init() is called from 1 sites in this file.
 	<NONE>
 
 static void clock_six_bits() is called from 1 sites in this file.
-    It appears to be inlineable (size = 43 units)
+    It appears to be inlineable (size = 48 units)
     It has 3 non-trivial scope blocks nested 3 deep.
     It calls these functions:
 	<NONE>
 
 static void command_ack() is called from 1 sites in this file.
-    It appears to be inlineable (size = 45 units)
+    It appears to be inlineable (size = 25 units)
     It has 3 non-trivial scope blocks nested 3 deep.
     It calls these functions:
 	tx_char() (4 times)
 	__delay_cycles() (1 times)
 
 static void command_action() is called from 2 sites in this file.
-    It appears to be inlineable (size = 106 units)
+    It appears to be inlineable (size = 90 units)
     It has 3 non-trivial scope blocks nested 3 deep.
     It calls these functions:
 	clock_six_bits() (1 times)
@@ -145,7 +145,7 @@ These external functions are called but not defined here:
 ==============================================================================
 
 static void command_action() is called from 2 sites in this file.
-    It appears to be inlineable (size = 106 units)
+    It appears to be inlineable (size = 90 units)
     It has 3 non-trivial scope blocks nested 3 deep.
     It calls these functions:
 	clock_six_bits() (1 times)

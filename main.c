@@ -1,6 +1,6 @@
 #include <msp430.h>
 #include <stdint.h>
-
+#include "arafepc_pin_config.h"
 /*
  * main.c
  */
@@ -40,7 +40,7 @@ const char tx_preamble[] = "!S!";
 // Byte 11: ch3_trg
 #pragma DATA_SECTION(device_info, ".infoC")
 const uint8_t device_info[16]= {   0x00, 0x00,
-								   0x7F, 0xFF,
+								   0xFF, 0xFF,
 								   0x00, 0x00,
 								   0x00, 0x00,
 								   0x00, 0x00,
@@ -66,7 +66,7 @@ static void clock_six_bits();
 static void command_ack();
 static void command_action();
 static void device_init();
-static void simple_copy_16(uint8_t *dst, uint8_t *src);
+static void simple_copy_16(uint8_t *dst, const uint8_t *src);
 
 // The command table is pretty simple.
 // 0: ping (do nothing, just acknowledge)
@@ -86,67 +86,11 @@ static void simple_copy_16(uint8_t *dst, uint8_t *src);
 // 15: 12V enable channel 3
 // all others are no response
 
-#define SPI_PORT P1OUT
-#define SPI_CLK (BIT6)
-#define SPI_DATA (BIT7)
-
-// En ports go
-// P3 , P2, P3, P2
-//  0 ,  2,  4,  5
-// Sig/trig ports are
-// P2, P3, P2, P3
-// Sig NCSs are
-// 0, 2, 3, 5
-// Trg NCSs are
-// 1, 3, 4, 6
-// So we could map this to
-// 0, 2, 7, 5
-// 1, 3, 4, 6
-
-// Sig/trig ports are all the same.
-#define CH0_EN_PORT P3OUT
-#define CH0_EN (BIT0)
-#define CH0_SIG_PORT P2OUT
-#define CH0_SIG_NCS (BIT0)
-#define CH0_TRG_PORT P2OUT
-#define CH0_TRG_NCS (BIT1)
-
-#define CH1_EN_PORT P2OUT
-#define CH1_EN (BIT2)
-#define CH1_SIG_PORT P3OUT
-#define CH1_SIG_NCS (BIT2)
-#define CH1_TRG_PORT P3OUT
-#define CH1_TRG_NCS (BIT3)
-
-#define CH2_EN_PORT P3OUT
-#define CH2_EN (BIT4)
-#define CH2_SIG_PORT P2OUT
-#define CH2_SIG_NCS (BIT3)
-#define CH2_TRG_PORT P2OUT
-#define CH2_TRG_NCS (BIT4)
-
-#define CH3_EN_PORT P2OUT
-#define CH3_EN (BIT5)
-#define CH3_SIG_PORT P3OUT
-#define CH3_SIG_NCS (BIT5)
-#define CH3_TRG_PORT P3OUT
-#define CH3_TRG_NCS (BIT6)
-
-// On port 2, pins 0, 1, 3, 4 are chip selects: 0001 1011 0x1B
-#define PORT2_NCS_MASK 0x1B
-// On port 3, pins 2, 3, 5, 6 are chip selects: 0110 11000 0x6C
-#define PORT3_NCS_MASK 0x6C
-
-#define EN_5V_PORT P3OUT
-#define EN_5V (BIT7)
-
-static void simple_copy_16(uint8_t *dst, uint8_t *src);
-
 static void device_init() {
 	P2OUT = device_info[2];
 	P2DIR = 0xFF;
 	P3OUT = device_info[3];
-	P3DIR = 0xFD;
+	P3DIR = 0xFF;
 	cmd = 8;
 	do {
 		cmd--;
@@ -325,7 +269,7 @@ static void command_ack() {
 	tx_char(etx);
 	return;
 }
-static void simple_copy_16(uint8_t *dst, uint8_t *src) {
+static void simple_copy_16(uint8_t *dst, const uint8_t *src) {
 	do {
 		*dst++ = *src++;
 	} while (((uint16_t) src) & 0x10);
@@ -344,18 +288,15 @@ static void device_info_flash() {
 	FCTL1 = FWKEY + ERASE;               // Set Erase bit
 	*((uint8_t *) device_info) = 0;
 	FCTL1 = FWKEY + WRT;
-	simple_copy_16(device_info, device_info_buffer);
+	simple_copy_16((uint8_t *) device_info, device_info_buffer);
 	FCTL1 = FWKEY;
 	FCTL3 = FWKEY + LOCK;
 }
 
+// TUNE THESE FOR THE VERSION BEING USED
 
-#pragma DATA_SECTION(enable_arr, ".infoD")
-const uint8_t enable_arr[4] = { CH0_EN, CH1_EN, CH2_EN, CH3_EN };
-#pragma DATA_SECTION(sig_arr, ".infoD")
-const uint8_t sig_arr[4] = {CH0_SIG_NCS, CH1_SIG_NCS, CH2_SIG_NCS, CH3_SIG_NCS};
-#pragma DATA_SECTION(trg_arr, ".infoD")
-const uint8_t trg_arr[4] = {CH0_TRG_NCS, CH1_TRG_NCS, CH2_TRG_NCS, CH3_TRG_NCS};
+// Pin configuration.
+// These are stored in infoD.
 
 static void handle_command() {
 	if (cmd & 0x80) {
@@ -378,7 +319,6 @@ static void handle_command() {
 // command, without the 'ack'ing.
 static void command_action() {
 	volatile uint8_t *addr;
-	uint8_t mask;
 	uint8_t ch;
 	//uint8_t type;
 
@@ -386,80 +326,44 @@ static void command_action() {
 	// type = cmd & 0x0C;
 
 	if (!(cmd & 0x08)) {
-		if (ch & 0x1) addr = &P3OUT;
-		else addr = &P2OUT;
-		if (cmd & 0x4) mask = trg_arr[ch];
-		else mask = sig_arr[ch];
-
-		*addr &= ~mask;
+		// Commands 0-7 are sig/trig set commands.
+		addr = att_port_arr[cmd & 0x7];
+		*addr &= ~att_bit_arr[ch];
 		// At this point we've lowered the chip select we want.
 		// So now clock the data.
 		clock_six_bits();
 		// Raise all chip selects, since we lowered one.
-		*addr |= mask;
+		*addr |= att_bit_arr[ch];
 		// Done.
 	} else if (!(cmd & 0x04)) {
-		// Port enable.
-		if (ch & 0x1) addr = &P2OUT;
-		else addr = &P3OUT;
-
-		if (arg) *addr |= enable_arr[ch];
-		else *addr &= ~enable_arr[ch];
+		addr = enable_port_arr[ch];
+		if (arg) *addr |= enable_bit_arr[ch];
+		else *addr &= enable_bit_arr[ch];
 	} else {
 		// 5V enable.
 		if (ch & 0x1) {
-			if (arg) EN_5V_PORT |= EN_5V; else EN_5V_PORT &= ~EN_5V;
+			addr = en_5v_port;
+			if (arg) *addr |= en_5v_bit; else *addr &= ~en_5v_bit;
 		}
 	}
 }
 
 void clock_six_bits() {
+	volatile uint8_t *clk_port;
+	volatile uint8_t *data_port;
 	uint8_t counter;
 
+	clk_port = spiclk_port;
+	data_port = spidata_port;
+
 	for (counter=6;counter !=0;counter--) {
-		SPI_PORT &= ~SPI_CLK;
-		SPI_PORT &= ~SPI_DATA;
-		if (arg & 0x20) SPI_PORT |= SPI_DATA;
-		SPI_PORT |= SPI_CLK;
+		*clk_port &= ~spiclk_bit;
+		*data_port &= ~spidata_bit;
+		if (arg & 0x20) *data_port |= spidata_bit;
+		*clk_port |= spiclk_bit;
 		arg <<= 1;
 	}
-	SPI_PORT &= ~(SPI_CLK | SPI_DATA);
+	*clk_port &= ~spiclk_bit;
+	*data_port &= ~spidata_bit;
 }
 
-// Replace this with:
-// rrc tx_char_pending
-// jnc timer1_a0_isr_clear
-// nop
-// nop
-// bis #(BIT4), P1SEL
-// reti
-// timer1_a0_isr_clear:
-// jz  timer1_a0_isr_done
-// bic #(BIT4), P1SEL
-// reti
-// timer1_a0_isr_done:
-// mov.w #(TASSEL_2 + ID_3 + TACLR + MC_0), &TACTL
-// clr.w &TACCTL0
-// bic.w #(LPM0), 0(SP)
-// reti
-//#pragma vector = TIMER1_A0_VECTOR
-//__interrupt void TIMER1_A0_ISR(void) {
-//	unsigned int p1sel_temp;
-//	// if tx_char_pending is set, we're transmitting.
-//	// otherwise, we're receiving.
-//	if (tx_char_pending) {
-//		p1sel_temp = P1SEL;
-//		if (tx_char_pending & 0x1) p1sel_temp &= ~(BIT4);
-//		else p1sel_temp |= BIT4;
-//		P1SEL = p1sel_temp;
-//
-//		tx_char_pending >>= 1;
-//		// was that the stop bit? if so, kill the counter and wake up
-//		if (!tx_char_pending) {
-//			TACTL = TASSEL_2 + ID_3 + TACLR + MC_0;
-//			TACCTL0 = 0;
-//			_bic_SR_register_on_exit(LPM0_bits);
-//		}
-//		// otherwise, stay asleep, we'll wake up at the next bit transition.
-//	}
-//}
