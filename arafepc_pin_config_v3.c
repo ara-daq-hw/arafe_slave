@@ -53,7 +53,7 @@
 #define SPI_DATA_PORT	P1OUT
 #define SPI_DATA_BIT	BIT7
 
-
+// Info D has 49 bytes out of 64.
 #pragma DATA_SECTION(enable_port_arr, ".infoD")
 volatile uint8_t *const enable_port_arr[4] = { &CH3_EN_PORT,
 											   &CH2_EN_PORT,
@@ -81,3 +81,38 @@ const uint8_t spiclk_bit = SPI_CLK_BIT;
 volatile uint8_t *const spidata_port = &SPI_DATA_PORT;
 #pragma DATA_SECTION(spidata_bit,".infoD")
 const uint8_t spidata_bit = SPI_DATA_BIT;
+
+// Default port inits.
+// The difference between v3/v2 is:
+// Port1's DIR  is 0xD0 for v3
+// Port1's DIR  is 0xD8 for v2
+// Port1's SEL  is 0x00 for v3
+// Port1's SEL  is 0x08 for v2
+// Port1's SEL2 is 0x00 for v3
+// Port1's SEL2 is 0x08 for v2
+// Port3's SEL  is 0x80 for v3
+// Port3's SEL  is 0x00 for v2
+// Port3's SEL2 is 0x80 for v3
+// Port3's SEL2 is 0x00 for v2
+// CAPD is 		CAPD0 + CAPD3 for v3
+// CAPD is 		CAPD0 + CAPD2 for v2
+// CACTL2 is	P2CA0 + P2CA2 + P2CA1 for v3 (In+ = CA0, In- = CA3)
+// CACTL2 is	P2CA0 + P2CA2 for v2 (In+ = CA0, In- = CA2)
+
+
+#pragma DATA_SECTION(port1_dir, ".infoD")
+const uint8_t port1_dir = 0xD0;
+#pragma DATA_SECTION(port1_sel, ".infoD")
+const uint8_t port1_sel = 0x00;
+#pragma DATA_SECTION(port1_sel2, ".infoD")
+const uint8_t port1_sel2 = 0x00;
+
+#pragma DATA_SECTION(port3_sel, ".infoD")
+const uint8_t port3_sel = 0x80;
+#pragma DATA_SECTION(port3_sel2, ".infoD")
+const uint8_t port3_sel2 = 0x80;
+
+#pragma DATA_SECTION(cap_disable, ".infoD")
+const uint8_t cap_disable = CAPD0 + CAPD3;
+#pragma DATA_SECTION(cap_ctl2, ".infoD")
+const uint8_t cap_ctl2 = P2CA0 + P2CA2 + P2CA1;

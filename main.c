@@ -113,8 +113,8 @@ static void comparator_init() {
     // CAPD.0 = 1, CAPD.2 = 1, CACTL1 = 8'b0000 010x = 0x04 (off: when enabled, 0x0E), CACTL2 = 8'b0001010x = 0x14.
 	// So CA+ = P1.0, CA- = P1.2, no reference used, comparator on, and falling edge triggers interrupt.
 	// Interrupts not enabled initially.
-    CAPD = CAPD0 + CAPD2;
-    CACTL2 = P2CA0 + P2CA2;
+    CAPD = cap_disable;
+    CACTL2 = cap_ctl2
     CACTL1 = CAON;
 }
 
@@ -151,10 +151,12 @@ static void pin_init() {
     // P3SEL = 0x00
     // P3SEL2 = 0x00
     // P3OUT = 0xFF
-    P1DIR = 0xDA;
-    P1SEL = 0x08;
-    P1SEL2 = 0x08;
-    P2SEL = 0x00;
+
+	P1DIR = port1_dir;
+    P1SEL = port1_sel;
+    P1SEL2 = port1_sel2;
+    P3SEL = port3_sel;
+    P3SEL2 = port3_sel2;
     device_init();
 }
 

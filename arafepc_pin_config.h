@@ -23,4 +23,12 @@ extern const uint8_t spiclk_bit;
 extern volatile uint8_t *const spidata_port;
 extern const uint8_t spidata_bit;
 
+extern const uint8_t port1_dir;
+extern const uint8_t port1_sel;
+extern const uint8_t port1_sel2;
+extern const uint8_t port3_sel;
+extern const uint8_t port3_sel2;
+extern const uint8_t cap_disable;
+extern const uint8_t cap_ctl2;
+
 #endif /* ARAFEPC_PIN_CONFIG_H_ */

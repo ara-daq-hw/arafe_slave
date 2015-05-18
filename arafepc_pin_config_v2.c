@@ -81,3 +81,20 @@ const uint8_t spiclk_bit = SPI_CLK_BIT;
 volatile uint8_t *const spidata_port = &SPI_DATA_PORT;
 #pragma DATA_SECTION(spidata_bit,".infoD")
 const uint8_t spidata_bit = SPI_DATA_BIT;
+
+#pragma DATA_SECTION(port1_dir, ".infoD")
+const uint8_t port1_dir = 0xD8;
+#pragma DATA_SECTION(port1_sel, ".infoD")
+const uint8_t port1_sel = 0x08;
+#pragma DATA_SECTION(port1_sel2, ".infoD")
+const uint8_t port1_sel2 = 0x08;
+
+#pragma DATA_SECTION(port3_sel, ".infoD")
+const uint8_t port3_sel = 0x00;
+#pragma DATA_SECTION(port3_sel2, ".infoD")
+const uint8_t port3_sel2 = 0x00;
+
+#pragma DATA_SECTION(cap_disable, ".infoD")
+const uint8_t cap_disable = CAPD0 + CAPD2;
+#pragma DATA_SECTION(cap_ctl2, ".infoD")
+const uint8_t cap_ctl2 = P2CA0 + P2CA2;
