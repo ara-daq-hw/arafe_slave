@@ -1,1 +1,0 @@
-"./arafepc_pin_config_v3.obj" "./interrupts_v2.obj" "./main.obj" "../lnk_msp430g2153.cmd" -l"libc.a" 
