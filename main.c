@@ -1,8 +1,14 @@
 #include <msp430.h>
 #include <stdint.h>
 #include "arafepc_pin_config.h"
+
 /*
  * main.c
+ *
+ * Updates:
+ * 			1: 06/17/2015 - Changed device_info[2] and [3] to 0xFD and 0xA7 respectively. This ensures 12EN control does not turn on when board is turned on
+ * 			2: 06/17/2015 - Also changed read to read the device_info_buffer, not device_info
+ *			3: 04/28/2016 - Added sensor 12v/5v_curr sense and FLT detect
  */
 
 #pragma NOINIT(rx_char)
@@ -40,14 +46,13 @@ const char tx_preamble[] = "!S!";
 // Byte 11: ch3_trg
 #pragma DATA_SECTION(device_info, ".infoC")
 const uint8_t device_info[16]= {   0x00, 0x00,
-								   0xFF, 0xFF,
+								   0xFD, 0xFF, // [3] was 0xF7
 								   0x00, 0x00,
 								   0x00, 0x00,
 								   0x00, 0x00,
 								   0x00, 0x00,
 								   0x12, 0x34,
 								   0x56, 0x78 };
-
 #pragma NOINIT(device_info_buffer)
 #pragma DATA_ALIGN(device_info_buffer, 16)
 uint8_t device_info_buffer[16];
@@ -56,6 +61,8 @@ uint8_t device_info_buffer[16];
 uint8_t cmd;
 #pragma NOINIT(arg)
 uint8_t arg;
+
+
 
 static void clock_init();
 static void comparator_init();
@@ -67,6 +74,22 @@ static void command_ack();
 static void command_action();
 static void device_init();
 static void simple_copy_16(uint8_t *dst, const uint8_t *src);
+
+static void sensor_init();
+static void read_adc(uint8_t ch); // Keep in memory
+#pragma NOINIT(adc_value) // Always NOINT this stuff, because the TI compiler eats glue
+uint16_t adc_value;
+
+// Const this, because TI really loves glue. Put it in the info section.
+#pragma DATA_SECTION(channels, ".infoC")
+const uint16_t channels[3] = {	INCH_10, // Temp
+								INCH_6, //5v_curr
+								INCH_7  // 12v_curr
+							};
+
+						//INCH_11, // Voltage
+						//INCH_0, // Current
+						//INCH_1	}; //
 
 // The command table is pretty simple.
 // 0: ping (do nothing, just acknowledge)
@@ -90,7 +113,7 @@ static void device_init() {
 	P2OUT = device_info[2];
 	P2DIR = 0xFF;
 	P3OUT = device_info[3];
-	P3DIR = 0xFF;
+	P3DIR = 0xFF;//Was 0xFD
 	cmd = 8;
 	do {
 		cmd--;
@@ -110,23 +133,23 @@ static void clock_init() {
 
 static void comparator_init() {
     // Comparator A setup:
-    // CAPD.0 = 1, CAPD.2 = 1, CACTL1 = 8'b0000 010x = 0x04 (off: when enabled, 0x0E), CACTL2 = 8'b0001010x = 0x14.
-	// So CA+ = P1.0, CA- = P1.2, no reference used, comparator on, and falling edge triggers interrupt.
+    // CAPD.0 = 1, CAPD.3 = 1, CACTL1 = 8'b0000 010x = 0x04 (off: when enabled, 0x0E), CACTL2 = 8'b0001010x = 0x14.
+	// So CA+ = P1.0, CA- = P1.3, no reference used, comparator on, and falling edge triggers interrupt.
 	// Interrupts not enabled initially.
     CAPD = cap_disable;
-    CACTL2 = cap_ctl2
+    CACTL2 = cap_ctl2;
     CACTL1 = CAON;
 }
 
 static void pin_init() {
     // P1.0: COMMS_COMP+ (CA0)
     // P1.1: BSL_TX
-    // P1.2: COMMS_COMP- (CA2)
-    // P1.3: unused
+    // P1.2: BSL_RX
+    // P1.3:  COMMS_COMP- (CA3)
     // P1.4: COMMS_TX (SMCLK output)
     // P1.5: BSL_RX
-    // P1.6: SPI_CLK
-    // P1.7: SPI_DATA
+    // P1.6: 5V_Curr
+    // P1.7: 12V_Curr
 
     // TimerA1 is used to do powerline comms. TimerA0 is used for a debugging UART.
     // When the comparator fires, the interrupt is disabled, and the value in TA1R is read.
@@ -142,22 +165,40 @@ static void pin_init() {
     // P1SEL  = 8'b0001 0000 = 0x10
     // P1SEL2 = 8'b0001 0000 = 0x00
     // P1OUT  = 0x00
-    // Port 2 and 3 are by default all outputs except P3.1.
+    // Port 2 and 3 are by default all outputs except P3.1 and P3.7 (12v_EN).
     // P2DIR = 0xFF
     // P2SEL = 0x00
     // P2SEL2 = 0x00
     // P2OUT = 0xFF
-    // P3DIR = 8'b1111 1101 = 0xFD
+    // P3DIR = 8'b1111 1111 = 0xFF
     // P3SEL = 0x00
     // P3SEL2 = 0x00
     // P3OUT = 0xFF
-
+	//P1OUT = 0x80; //Also Experimental, bit set here determines whether pullup or pulldown res is enabled (in conjunction w/ P1REN)
 	P1DIR = port1_dir;
     P1SEL = port1_sel;
     P1SEL2 = port1_sel2;
-    P3SEL = port3_sel;
+    P3SEL = port3_sel; // sels set low -> GPIO, set high -> comparator. Duh
     P3SEL2 = port3_sel2;
     device_init();
+}
+
+static void sensor_init()
+{
+	ADC10CTL0=SREF_1 + REFON + ADC10ON + ADC10SHT_3 ; //1.5V ref,Ref on,64 clocks for sample
+	ADC10AE0 = analog_enable;
+
+}
+
+static void read_adc(uint8_t ch)
+{
+	ADC10CTL1 = channels[ch] + ADC10DIV_3; // Sensor is at INCH_ch and clock/4
+
+	__delay_cycles(1000);              // Wait for reference to settle
+	ADC10CTL0 |= ENC + ADC10SC;      // Enable Conversion
+    while(ADC10CTL1 & BUSY);         // Converting...
+    adc_value = ADC10MEM;                       // Store adc value
+	ADC10CTL0&=~ENC;  // Disable Conversion
 }
 
 #pragma FUNC_NEVER_RETURNS(main)
@@ -173,6 +214,9 @@ void main(void) {
     comparator_init();
 	// Initialize all our static variables.
 	preamble_match = 0;
+
+	sensor_init();
+
     // Main loop.
     while (1) {
     	while (preamble_match < rx_preamble_len) {
@@ -263,9 +307,11 @@ static void command_ack() {
 	// it makes much of a difference.
 	// 10 ms pause.
 	__delay_cycles(80000);
+	//Transmit preamble
 	for (counter=tx_preamble_len;counter!=0;counter--) {
 		tx_char(tx_preamble[counter-1]);
 	}
+
 	tx_char(cmd);
 	tx_char(ack_byte);
 	tx_char(etx);
@@ -295,19 +341,35 @@ static void device_info_flash() {
 	FCTL3 = FWKEY + LOCK;
 }
 
-// TUNE THESE FOR THE VERSION BEING USED
 
 // Pin configuration.
 // These are stored in infoD.
 
 static void handle_command() {
-	if (cmd & 0x80) {
+	if (cmd & 0x80) {//Write
 		device_info_buffer[cmd & 0xF] = arg;
 		ack_byte = 0;
-	} else if (cmd & 0x40) {
-		ack_byte = device_info[cmd & 0xF];
-	} else if (cmd & 0x20) {
+	} else if (cmd & 0x40) {//read
+		ack_byte = device_info_buffer[cmd & 0xF];
+	} else if (cmd & 0x20) {//flash
 		device_info_flash();
+	} else if (cmd & 0x10) { // sensor reads, assume first time it goes to else so the value can be read
+		unsigned char sensor_val = cmd & 0xF;
+		if (sensor_val ==  4) ack_byte = (adc_value & 0x3); // For lower two bits of the adc10 value, check first and then read off
+		else { // For the upper 8 bits, convert the value first
+			if (sensor_val == 3){ //If sensor 3 -> look for fault detection
+				P1REN=0x80; //Enable Pullup resistors
+				P1OUT |= 0x80;
+				ADC10AE0 = analog_enable_fault; //Set for fault detection
+				read_adc(0x02); //Read the 12v_curr line (for FLT detect)
+				ack_byte = adc_value >> 2; // Shift right by 2
+				P1REN = 0x00; //Disable pullup resistors
+				ADC10AE0 = analog_enable; //Return ADC10AE for 5 and 12v current sensing (default)
+			} else{
+			read_adc(sensor_val); // Pull out the requested channel and use as function argument
+			ack_byte = adc_value >> 2; // Shift right by 2
+			}
+		}
 	} else {
 		command_action();
 		ack_byte = 0;
@@ -322,7 +384,7 @@ static void handle_command() {
 static void command_action() {
 	volatile uint8_t *addr;
 	uint8_t ch;
-	//uint8_t type;
+	//uint8_t type
 
 	ch = cmd & 0x3;
 	// type = cmd & 0x0C;
@@ -335,17 +397,23 @@ static void command_action() {
 		// So now clock the data.
 		clock_six_bits();
 		// Raise all chip selects, since we lowered one.
-		*addr |= att_bit_arr[ch];
+		*addr |= att_bit_arr[cmd & 0x7];
 		// Done.
 	} else if (!(cmd & 0x04)) {
 		addr = enable_port_arr[ch];
 		if (arg) *addr |= enable_bit_arr[ch];
-		else *addr &= enable_bit_arr[ch];
+		else *addr &= ~enable_bit_arr[ch];
 	} else {
 		// 5V enable.
 		if (ch & 0x1) {
 			addr = en_5v_port;
 			if (arg) *addr |= en_5v_bit; else *addr &= ~en_5v_bit;
+		}
+		// 12V enable.
+		else if(ch & 0x2) {
+			addr = en_12v_port;
+			if (arg) *addr |= en_12v_bit; else *addr &= ~en_12v_bit;
+
 		}
 	}
 }
