@@ -1,5 +1,5 @@
 /*
- * arafepc_pin_config_v3.c
+ * arafepc_pin_config_v4.c
  *
  *  Created on: Apr 10, 2015
  *      Author: barawn
@@ -47,10 +47,13 @@
 #define EN5V_PORT		P3OUT
 #define EN5V_BIT		BIT1
 
-#define SPI_CLK_PORT	P1OUT
+#define EN12V_PORT      P3OUT
+#define EN12V_BIT       BIT7
+
+#define SPI_CLK_PORT	P2OUT // Changed from P1OUT
 #define	SPI_CLK_BIT		BIT6
 
-#define SPI_DATA_PORT	P1OUT
+#define SPI_DATA_PORT	P2OUT // Changed from P1OUT
 #define SPI_DATA_BIT	BIT7
 
 
@@ -74,6 +77,12 @@ const uint8_t att_bit_arr[8] = 	{ 	SATTCS0_BIT, SATTCS1_BIT, SATTCS2_BIT, SATTCS
 volatile uint8_t *const en_5v_port = &EN5V_PORT;
 #pragma DATA_SECTION(en_5v_bit, ".infoD")
 const uint8_t en_5v_bit = EN5V_BIT;
+
+
+#pragma DATA_SECTION(en_12v_port, ".infoB") // Put in infoB b/c infoD is full....
+volatile uint8_t *const en_12v_port = &EN12V_PORT;
+#pragma DATA_SECTION(en_12v_bit, ".infoB")
+const uint8_t en_12v_bit = EN12V_BIT;
 
 
 #pragma DATA_SECTION(spiclk_port, ".infoD")
@@ -104,18 +113,23 @@ const uint8_t spidata_bit = SPI_DATA_BIT;
 
 
 #pragma DATA_SECTION(port1_dir, ".infoD")
-const uint8_t port1_dir = 0xD0;
+const uint8_t port1_dir = 0x10; //Changed from 0xD0
 #pragma DATA_SECTION(port1_sel, ".infoD")
 const uint8_t port1_sel = 0x00;
 #pragma DATA_SECTION(port1_sel2, ".infoD")
 const uint8_t port1_sel2 = 0x00;
 
 #pragma DATA_SECTION(port3_sel, ".infoD")
-const uint8_t port3_sel = 0x80;
+const uint8_t port3_sel = 0x00; //needs to be 0x00 for the GPIO for 3.7, 3.7 use to be comparator
 #pragma DATA_SECTION(port3_sel2, ".infoD")
-const uint8_t port3_sel2 = 0x80;
+const uint8_t port3_sel2 = 0x00; //0b00000000 also needs to be 0, or it will never turn off 12v
 
 #pragma DATA_SECTION(cap_disable, ".infoD")
 const uint8_t cap_disable = CAPD0 + CAPD3;
 #pragma DATA_SECTION(cap_ctl2, ".infoD")
 const uint8_t cap_ctl2 = P2CA0 + P2CA2 + P2CA1;
+
+#pragma DATA_SECTION(analog_enable, ".infoD")
+const uint8_t analog_enable = 0xC0; // 0xC0 Need to set bit 6 and 7 of ADC10AE for A6 and A7 (5v and 12v_curr) 0b11000000
+#pragma DATA_SECTION(analog_enable_fault, "infoD")
+const uint8_t analog_enable_fault = 0x40; //Do not set ADC bit for Pin 1.7 for 12V fault detection

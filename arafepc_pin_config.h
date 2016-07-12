@@ -7,8 +7,8 @@
  *      Author: barawn
  */
 
-#ifndef ARAFEPC_PIN_CONFIG_H_
-#define ARAFEPC_PIN_CONFIG_H_
+#ifndef ARAFE_SLAVE_V2_ARAFEPC_PIN_CONFIG_H_
+#define ARAFE_SLAVE_V2_ARAFEPC_PIN_CONFIG_H_
 
 #include <stdint.h>
 
@@ -16,8 +16,13 @@ extern volatile uint8_t *const enable_port_arr[4];
 extern const uint8_t enable_bit_arr[4];
 extern volatile uint8_t *const att_port_arr[8];
 extern const uint8_t att_bit_arr[8];
+
 extern volatile uint8_t *const en_5v_port;
 extern const uint8_t en_5v_bit;
+
+extern volatile uint8_t *const en_12v_port;
+extern const uint8_t en_12v_bit;
+
 extern volatile uint8_t *const spiclk_port;
 extern const uint8_t spiclk_bit;
 extern volatile uint8_t *const spidata_port;
@@ -30,5 +35,6 @@ extern const uint8_t port3_sel;
 extern const uint8_t port3_sel2;
 extern const uint8_t cap_disable;
 extern const uint8_t cap_ctl2;
-
-#endif /* ARAFEPC_PIN_CONFIG_H_ */
+extern const uint8_t analog_enable;
+extern const uint8_t analog_enable_fault;
+#endif /* ARAFE_SLAVE_V2_ARAFEPC_PIN_CONFIG_H_ */
