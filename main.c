@@ -9,7 +9,11 @@
  * 			1: 06/17/2015 - Changed device_info[2] and [3] to 0xFD and 0xA7 respectively. This ensures 12EN control does not turn on when board is turned on
  * 			2: 06/17/2015 - Also changed read to read the device_info_buffer, not device_info
  *			3: 04/28/2016 - Added sensor 12v/5v_curr sense and FLT detect
+ *			4: 8/11/2016 - Bump to v1.0. Rework for RFSA3713, fix device_info bugs, guard against serial number/signature overwrite.
  */
+
+#define VER_MAJOR 1
+#define VER_MINOR 0
 
 #pragma NOINIT(rx_char)
 uint8_t rx_char;
@@ -32,27 +36,28 @@ const char rx_preamble[3] = "!M!";
 const char tx_preamble[] = "!S!";
 #define tx_preamble_len 3
 
-// The INFOC segment contains the defaults.
-// Byte 0/1: serial number
-// Byte 2: P2OUT
-// Byte 3: P3OUT
-// Byte 4: ch0_sig
-// Byte 5: ch1_sig
-// Byte 6: ch2_sig
-// Byte 7: ch3_sig
-// Byte 8: ch0_trg
-// Byte 9: ch1_trg
-// Byte 10: ch2_trg
-// Byte 11: ch3_trg
+#define DEVICE_INFO_P2OUT 8
+#define DEVICE_INFO_P3OUT 9
 #pragma DATA_SECTION(device_info, ".infoC")
+// device_info[0-7] are the attenuator settings.
+// device_info[8] is P2OUT default
+// device_info[9] is P3OUT default
+// device_info[11:10] is serial[1:0]
+// device_info[15:12] is a signature.
+// originally,
+// 		P2OUT was 0x3D = 0011 1101  - SATT_CS3, TATT_CS2, SATT_CS1, TATT_CS1, TATT_CS0.
+//      P3OUT was 0xA7 = 1010 0111  - TATT_CS3, EN_5V, SATT_CS2. SATT_CS0, EN_12V.
+//
+// Now, all of the CSes are low, so it's just EN_5V, EN_12V:
+// P2OUT = 0, P3OUT = P3.1 | P3.7 = 0x82
 const uint8_t device_info[16]= {   0x00, 0x00,
-								   0xFD, 0xFF, // [3] was 0xF7
+		                           0x00, 0x00,
+		                           0x00, 0x00,
+		                           0x00, 0x00,
+								   0x00, 0x82,
 								   0x00, 0x00,
-								   0x00, 0x00,
-								   0x00, 0x00,
-								   0x00, 0x00,
-								   0x12, 0x34,
-								   0x56, 0x78 };
+								   VER_MAJOR, VER_MINOR,
+								   0x12, 0x34 };
 #pragma NOINIT(device_info_buffer)
 #pragma DATA_ALIGN(device_info_buffer, 16)
 uint8_t device_info_buffer[16];
@@ -69,7 +74,7 @@ static void comparator_init();
 static void pin_init();
 static void get_char();
 static void handle_command();
-static void clock_six_bits();
+void load_attenuator();
 static void command_ack();
 static void command_action();
 static void device_init();
@@ -94,7 +99,7 @@ const uint16_t channels[3] = {	INCH_10, // Temp
 // The command table is pretty simple.
 // 0: ping (do nothing, just acknowledge)
 // 1: enable/disable 5V (arg = 0: disable, arg = 1: enable)
-// 2, 3: no response
+// 2, 3: no response (sleazed to allow for device_info)
 // 4: set signal attenuator channel 0
 // 5: set signal attenuator channel 1
 // 6: set signal attenuator channel 2
@@ -110,10 +115,13 @@ const uint16_t channels[3] = {	INCH_10, // Temp
 // all others are no response
 
 static void device_init() {
-	P2OUT = device_info[2];
+	// P2 and P3 only hold digital outputs that we can't screw up our communications.
+	P2OUT = device_info[DEVICE_INFO_P2OUT];
 	P2DIR = 0xFF;
-	P3OUT = device_info[3];
-	P3DIR = 0xFF;//Was 0xFD
+	P3OUT = device_info[DEVICE_INFO_P3OUT];
+	P3DIR = 0xFF;
+	// We can now go ahead and pretend we get commands 7-0,
+	// grabbing the device_info as the argument for each one.
 	cmd = 8;
 	do {
 		cmd--;
@@ -347,7 +355,9 @@ static void device_info_flash() {
 
 static void handle_command() {
 	if (cmd & 0x80) {//Write
-		device_info_buffer[cmd & 0xF] = arg;
+		// Guard against overwriting the signature or firmware version.
+		if ((cmd & 0xF) < 12)
+			device_info_buffer[cmd & 0xF] = arg;
 		ack_byte = 0;
 	} else if (cmd & 0x40) {//read
 		ack_byte = device_info_buffer[cmd & 0xF];
@@ -389,15 +399,37 @@ static void command_action() {
 	ch = cmd & 0x3;
 	// type = cmd & 0x0C;
 
+	// Command table:
+	// 0: set sig attenuator 0
+	// 1: set sig attenuator 1
+	// 2: set sig attenuator 2
+	// 3: set sig attenuator 3
+	// 4: set trg attenuator 0
+	// 5: set trg attenuator 1
+	// 6: set trg attenuator 2
+	// 7: set trg attenuator 3
+	// 8: enable 12V 0
+	// 9: enable 12V 1
+	//10: enable 12V 2
+	//11: enable 12V 3
+	//12: enable 5V
+	//13: enable 12V
+	//14: enable 5V
+	//15: enable 12V
 	if (!(cmd & 0x08)) {
 		// Commands 0-7 are sig/trig set commands.
-		addr = att_port_arr[cmd & 0x7];
-		*addr &= ~att_bit_arr[cmd & 0x7];
+		// For the new attenuators, we need to clock in 16 bits.
+		// The low 7 bits are the data, and bit 8 is unused.
+		//
+		// Top byte, low 3 bits must be 0. All remaining are don't
+		// care. So we set the *top* bit in order to get a free
+		// counter.
 		// At this point we've lowered the chip select we want.
-		// So now clock the data.
-		clock_six_bits();
-		// Raise all chip selects, since we lowered one.
+		// So now load the attenuator.
+		*addr &= ~att_bit_arr[cmd & 0x7];
+		load_attenuator();
 		*addr |= att_bit_arr[cmd & 0x7];
+		*addr &= ~att_bit_arr[cmd & 0x7];
 		// Done.
 	} else if (!(cmd & 0x04)) {
 		addr = enable_port_arr[ch];
@@ -418,20 +450,25 @@ static void command_action() {
 	}
 }
 
-void clock_six_bits() {
+void load_attenuator() {
 	volatile uint8_t *clk_port;
 	volatile uint8_t *data_port;
-	uint8_t counter;
+	uint16_t shift_data;
 
 	clk_port = spiclk_port;
 	data_port = spidata_port;
 
-	for (counter=6;counter !=0;counter--) {
+	// Attenuator loading:
+	// LE stays low, and 16-bits of data are clocked in.
+	// Then LE for the appropriate attenuator goes high, then low.
+	shift_data = 0x8000;
+	shift_data |= arg;
+	while (arg) {
 		*clk_port &= ~spiclk_bit;
 		*data_port &= ~spidata_bit;
-		if (arg & 0x20) *data_port |= spidata_bit;
+		if (arg & 0x1) *data_port |= spidata_bit;
 		*clk_port |= spiclk_bit;
-		arg <<= 1;
+		arg = arg >> 1;
 	}
 	*clk_port &= ~spiclk_bit;
 	*data_port &= ~spidata_bit;
