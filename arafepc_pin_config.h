@@ -23,10 +23,22 @@ extern const uint8_t en_5v_bit;
 extern volatile uint8_t *const en_12v_port;
 extern const uint8_t en_12v_bit;
 
-extern volatile uint8_t *const spiclk_port;
-extern const uint8_t spiclk_bit;
-extern volatile uint8_t *const spidata_port;
-extern const uint8_t spidata_bit;
+#define SPI_CLK_PORT	P2OUT // Changed from P1OUT
+#define	SPI_CLK_BIT		BIT6
+
+#define SPI_DATA_PORT	P2OUT // Changed from P1OUT
+#define SPI_DATA_BIT	BIT7
+
+#define EN5V_PORT		P3OUT
+#define EN5V_BIT		BIT1
+
+#define EN12V_PORT      P3OUT
+#define EN12V_BIT       BIT7
+
+//extern volatile uint8_t *const spiclk_port;
+//extern const uint8_t spiclk_bit;
+//extern volatile uint8_t *const spidata_port;
+//extern const uint8_t spidata_bit;
 
 extern const uint8_t port1_dir;
 extern const uint8_t port1_sel;

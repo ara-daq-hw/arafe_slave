@@ -7,6 +7,7 @@
 
 #include <msp430.h>
 #include <stdint.h>
+#include "arafepc_pin_config.h"
 
 #define CH0_EN_PORT		P3OUT
 #define CH0_EN_BIT		BIT6
@@ -44,21 +45,6 @@
 #define SATTCS3_PORT	P2OUT
 #define SATTCS3_BIT		BIT0
 
-#define EN5V_PORT		P3OUT
-#define EN5V_BIT		BIT1
-
-#define EN12V_PORT      P3OUT
-#define EN12V_BIT       BIT7
-
-#define SPI_CLK_PORT	P2OUT // Changed from P1OUT
-#define	SPI_CLK_BIT		BIT6
-
-#define SPI_DATA_PORT	P2OUT // Changed from P1OUT
-#define SPI_DATA_BIT	BIT7
-
-
-
-
 #pragma DATA_SECTION(enable_port_arr, ".infoD")
 volatile uint8_t *const enable_port_arr[4] = { &CH0_EN_PORT,
 											   &CH1_EN_PORT,
@@ -84,15 +70,15 @@ volatile uint8_t *const en_12v_port = &EN12V_PORT;
 #pragma DATA_SECTION(en_12v_bit, ".infoB")
 const uint8_t en_12v_bit = EN12V_BIT;
 
-
-#pragma DATA_SECTION(spiclk_port, ".infoD")
-volatile uint8_t *const spiclk_port = &SPI_CLK_PORT;
-#pragma DATA_SECTION(spiclk_bit,".infoD")
-const uint8_t spiclk_bit = SPI_CLK_BIT;
-#pragma DATA_SECTION(spidata_port, ".infoD")
-volatile uint8_t *const spidata_port = &SPI_DATA_PORT;
-#pragma DATA_SECTION(spidata_bit,".infoD")
-const uint8_t spidata_bit = SPI_DATA_BIT;
+// SPI stuff is now back to hardcoded.
+//#pragma DATA_SECTION(spiclk_port, ".infoD")
+//volatile uint8_t *const spiclk_port = &SPI_CLK_PORT;
+//#pragma DATA_SECTION(spiclk_bit,".infoD")
+//const uint8_t spiclk_bit = SPI_CLK_BIT;
+//#pragma DATA_SECTION(spidata_port, ".infoD")
+//volatile uint8_t *const spidata_port = &SPI_DATA_PORT;
+//#pragma DATA_SECTION(spidata_bit,".infoD")
+//const uint8_t spidata_bit = SPI_DATA_BIT;
 
 // Default port inits.
 // The difference between v3/v2 is:

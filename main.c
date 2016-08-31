@@ -1,7 +1,7 @@
 #include <msp430.h>
 #include <stdint.h>
 #include "arafepc_pin_config.h"
-
+#include "delay.h"
 /*
  * main.c
  *
@@ -33,7 +33,7 @@ const char rx_preamble[3] = "!M!";
 #define rx_preamble_len 3
 #define etx 0xFF
 #pragma DATA_SECTION(tx_preamble, ".infoD")
-const char tx_preamble[] = "!S!";
+const char tx_preamble[] = " !S!";
 #define tx_preamble_len 3
 
 #define DEVICE_INFO_P2OUT 8
@@ -87,9 +87,9 @@ uint16_t adc_value;
 
 // Const this, because TI really loves glue. Put it in the info section.
 #pragma DATA_SECTION(channels, ".infoC")
-const uint16_t channels[3] = {	INCH_10, // Temp
-								INCH_6, //5v_curr
-								INCH_7  // 12v_curr
+const uint16_t channels[3] = {	INCH_10 | ADC10DIV_3, // Temp
+								INCH_6 | ADC10DIV_3, //5v_curr
+								INCH_7 | ADC10DIV_3 // 12v_curr
 							};
 
 						//INCH_11, // Voltage
@@ -186,6 +186,7 @@ static void pin_init() {
 	P1DIR = port1_dir;
     P1SEL = port1_sel;
     P1SEL2 = port1_sel2;
+    P2SEL = 0;
     P3SEL = port3_sel; // sels set low -> GPIO, set high -> comparator. Duh
     P3SEL2 = port3_sel2;
     device_init();
@@ -200,9 +201,10 @@ static void sensor_init()
 
 static void read_adc(uint8_t ch)
 {
-	ADC10CTL1 = channels[ch] + ADC10DIV_3; // Sensor is at INCH_ch and clock/4
+	volatile unsigned int i;
+	ADC10CTL1 = channels[ch]; // Sensor is at INCH_ch and clock/4
 
-	__delay_cycles(1000);              // Wait for reference to settle
+	opt_delay(331);
 	ADC10CTL0 |= ENC + ADC10SC;      // Enable Conversion
     while(ADC10CTL1 & BUSY);         // Converting...
     adc_value = ADC10MEM;                       // Store adc value
@@ -218,7 +220,7 @@ void main(void) {
     clock_init();
     // Set up pins.
     pin_init();
-    // Set up comparator.
+    // Set up comparator
     comparator_init();
 	// Initialize all our static variables.
 	preamble_match = 0;
@@ -308,18 +310,15 @@ static void tx_char(unsigned char tx) {
 }
 
 static void command_ack() {
-	uint8_t counter;
-
+	unsigned int counter;
 	// Put a bit of a pause here to let the threshold settle.
 	// This shouldn't be necessary in the end, but I don't think
 	// it makes much of a difference.
 	// 10 ms pause.
-	__delay_cycles(80000);
-	//Transmit preamble
-	for (counter=tx_preamble_len;counter!=0;counter--) {
-		tx_char(tx_preamble[counter-1]);
+	opt_delay(26664);
+	for (counter=tx_preamble_len;counter;counter--) {
+		tx_char(tx_preamble[counter]);
 	}
-
 	tx_char(cmd);
 	tx_char(ack_byte);
 	tx_char(etx);
@@ -417,6 +416,11 @@ static void command_action() {
 	//14: enable 5V
 	//15: enable 12V
 	if (!(cmd & 0x08)) {
+		unsigned int idx = cmd & 0x7;
+		// att_port_arr contains the addresses of the ports containing
+		// the LE bits. To figure out which port, we look at the low
+		// 3 bits of the command (0000 0111=0x07)
+		addr = att_port_arr[idx];
 		// Commands 0-7 are sig/trig set commands.
 		// For the new attenuators, we need to clock in 16 bits.
 		// The low 7 bits are the data, and bit 8 is unused.
@@ -426,10 +430,10 @@ static void command_action() {
 		// counter.
 		// At this point we've lowered the chip select we want.
 		// So now load the attenuator.
-		*addr &= ~att_bit_arr[cmd & 0x7];
+		*addr &= ~att_bit_arr[idx];
 		load_attenuator();
-		*addr |= att_bit_arr[cmd & 0x7];
-		*addr &= ~att_bit_arr[cmd & 0x7];
+		*addr |= att_bit_arr[idx];
+		*addr &= ~att_bit_arr[idx];
 		// Done.
 	} else if (!(cmd & 0x04)) {
 		addr = enable_port_arr[ch];
@@ -438,39 +442,41 @@ static void command_action() {
 	} else {
 		// 5V enable.
 		if (ch & 0x1) {
-			addr = en_5v_port;
-			if (arg) *addr |= en_5v_bit; else *addr &= ~en_5v_bit;
+			if (arg) EN5V_PORT |= EN5V_BIT;
+			else EN5V_PORT &= ~EN5V_BIT;
 		}
 		// 12V enable.
 		else if(ch & 0x2) {
-			addr = en_12v_port;
-			if (arg) *addr |= en_12v_bit; else *addr &= ~en_12v_bit;
-
+			if (arg) EN12V_PORT |= EN12V_BIT;
+			else EN12V_PORT &= ~EN12V_BIT;
 		}
 	}
 }
 
-void load_attenuator() {
-	volatile uint8_t *clk_port;
-	volatile uint8_t *data_port;
-	uint16_t shift_data;
 
-	clk_port = spiclk_port;
-	data_port = spidata_port;
+
+void load_attenuator() {
+	uint16_t shift_data;
 
 	// Attenuator loading:
 	// LE stays low, and 16-bits of data are clocked in.
 	// Then LE for the appropriate attenuator goes high, then low.
 	shift_data = 0x8000;
 	shift_data |= arg;
-	while (arg) {
-		*clk_port &= ~spiclk_bit;
-		*data_port &= ~spidata_bit;
-		if (arg & 0x1) *data_port |= spidata_bit;
-		*clk_port |= spiclk_bit;
-		arg = arg >> 1;
+	while (shift_data) { //for all of the bits in arg
+		// Lower CLK.
+		SPI_CLK_PORT &= ~SPI_CLK_BIT;
+		// If DATA is supposed to be high, raise it. Else lower it.
+		if (shift_data & 0x1) SPI_DATA_PORT |= SPI_DATA_BIT;
+		else SPI_DATA_PORT &= ~SPI_DATA_BIT;
+
+		// Raise CLK.
+		SPI_CLK_PORT |= SPI_CLK_BIT;
+		// Shift down.
+		shift_data = shift_data >> 1; //bit shift
 	}
-	*clk_port &= ~spiclk_bit;
-	*data_port &= ~spidata_bit;
+	// Lower CLK and DATA. We're done.
+	SPI_CLK_PORT &= ~SPI_CLK_BIT;
+	SPI_DATA_PORT &= ~SPI_DATA_BIT;
 }
 
