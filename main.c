@@ -1,6 +1,8 @@
 #include <msp430.h>
 #include <stdint.h>
-#include "arafepc_pin_config.h"
+#include "arafepc_board_specific.h"
+#include "arafepc_powerline_comms.h"
+#include "utility.h"
 
 /*
  * main.c
@@ -10,46 +12,46 @@
  * 			2: 06/17/2015 - Also changed read to read the device_info_buffer, not device_info
  *			3: 04/28/2016 - Added sensor 12v/5v_curr sense and FLT detect
  *			4: 8/11/2016 - Bump to v1.0. Rework for RFSA3713, fix device_info bugs, guard against serial number/signature overwrite.
+ *			5: 8/31/2016 - v2.0. Rework the command protocol to save space. Bugfixes.
  */
 
-#define VER_MAJOR 1
+#define VER_MAJOR 2
 #define VER_MINOR 0
 
-#pragma NOINIT(rx_char)
-uint8_t rx_char;
-// These are now stored in registers (r4/r5).
-//#pragma NOINIT(rx_bits)
-//uint8_t rx_bits;
-//#pragma NOINIT(timer1_isr_next_step)
-//uint16_t timer1_isr_next_step;
-#pragma NOINIT(tx_char_pending)
-uint16_t tx_char_pending;
+#pragma DATA_SECTION(tx_template, ".infoC")
+// Transmitted data is really only 6 bytes long, but we want to reuse simple_copy_16.
+#pragma DATA_ALIGN(tx_template, 16)
+// Note that this is BACKWARDS since the counter runs from 6 to 0.
+const uint8_t tx_template[16] = { 0xFF, 0, 0, '!', 'S', '!', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+#pragma NOINIT(tx_data)
+#pragma DATA_ALIGN(tx_data, 16)
+//< Actual data to transmit.
+uint8_t tx_data[16];
+//< Length of data to transmit.
+const uint8_t tx_data_len = 6;
+//< Location of command byte.
+const uint8_t tx_data_cmd_idx = 2;
+//< Location of ack byte.
+const uint8_t tx_data_ack_idx = 1;
 
-#pragma NOINIT(ack_byte)
-static uint8_t ack_byte;
-// Simple, simple version of arafe_slave code. This might just work, too.
-#pragma DATA_SECTION(rx_preamble, ".infoD")
+#pragma DATA_SECTION(rx_preamble, ".infoC")
+//< Preamble received from master.
 const char rx_preamble[3] = "!M!";
 #define rx_preamble_len 3
+//< End of transmission.
 #define etx 0xFF
-#pragma DATA_SECTION(tx_preamble, ".infoD")
-const char tx_preamble[] = "!S!";
-#define tx_preamble_len 3
 
+//< Location in device info structure of P2OUT default.
 #define DEVICE_INFO_P2OUT 8
+//< Location in device info structure of P3OUT default.
 #define DEVICE_INFO_P3OUT 9
-#pragma DATA_SECTION(device_info, ".infoC")
 // device_info[0-7] are the attenuator settings.
 // device_info[8] is P2OUT default
 // device_info[9] is P3OUT default
 // device_info[11:10] is serial[1:0]
 // device_info[15:12] is a signature.
-// originally,
-// 		P2OUT was 0x3D = 0011 1101  - SATT_CS3, TATT_CS2, SATT_CS1, TATT_CS1, TATT_CS0.
-//      P3OUT was 0xA7 = 1010 0111  - TATT_CS3, EN_5V, SATT_CS2. SATT_CS0, EN_12V.
-//
-// Now, all of the CSes are low, so it's just EN_5V, EN_12V:
-// P2OUT = 0, P3OUT = P3.1 | P3.7 = 0x82
+#pragma DATA_SECTION(device_info, ".infoB")
+//< Device information structure. Contains defaults, serial number, version number, and signature.
 const uint8_t device_info[16]= {   0x00, 0x00,
 		                           0x00, 0x00,
 		                           0x00, 0x00,
@@ -60,60 +62,32 @@ const uint8_t device_info[16]= {   0x00, 0x00,
 								   0x12, 0x34 };
 #pragma NOINIT(device_info_buffer)
 #pragma DATA_ALIGN(device_info_buffer, 16)
+//< Copy of device info in working memory.
 uint8_t device_info_buffer[16];
 
 #pragma NOINIT(cmd)
+//< Command byte.
 uint8_t cmd;
 #pragma NOINIT(arg)
+//< Argument byte.
 uint8_t arg;
 
+#pragma NOINIT(adc_value)
+//< Last read ADC value.
+uint16_t adc_value;
 
 
 static void clock_init();
 static void comparator_init();
 static void pin_init();
-static void get_char();
 static void handle_command();
 void load_attenuator();
 static void command_ack();
-static void command_action();
 static void device_init();
-static void simple_copy_16(uint8_t *dst, const uint8_t *src);
-
 static void sensor_init();
 static void read_adc(uint8_t ch); // Keep in memory
-#pragma NOINIT(adc_value) // Always NOINT this stuff, because the TI compiler eats glue
-uint16_t adc_value;
 
-// Const this, because TI really loves glue. Put it in the info section.
-#pragma DATA_SECTION(channels, ".infoC")
-const uint16_t channels[3] = {	INCH_10, // Temp
-								INCH_6, //5v_curr
-								INCH_7  // 12v_curr
-							};
-
-						//INCH_11, // Voltage
-						//INCH_0, // Current
-						//INCH_1	}; //
-
-// The command table is pretty simple.
-// 0: ping (do nothing, just acknowledge)
-// 1: enable/disable 5V (arg = 0: disable, arg = 1: enable)
-// 2, 3: no response (sleazed to allow for device_info)
-// 4: set signal attenuator channel 0
-// 5: set signal attenuator channel 1
-// 6: set signal attenuator channel 2
-// 7: set signal attenuator channel 3
-// 8: set trigger attenuator channel 0
-// 9: set trigger attenuator channel 1
-// 10: set trigger attenuator channel 2
-// 11: set trigger attenuator channel 3
-// 12: 12V enable channel 0
-// 13: 12V enable channel 1
-// 14: 12V enable channel 2
-// 15: 12V enable channel 3
-// all others are no response
-
+//< Initialize device to defaults.
 static void device_init() {
 	// P2 and P3 only hold digital outputs that we can't screw up our communications.
 	P2OUT = device_info[DEVICE_INFO_P2OUT];
@@ -126,11 +100,14 @@ static void device_init() {
 	do {
 		cmd--;
 		arg = device_info[cmd];
-		command_action();
+		// This doesn't ever actually *transmit* an ack, it just fills the buffer.
+		// So we can reuse it here.
+		handle_command();
 	} while (cmd);
 	simple_copy_16(device_info_buffer, device_info);
 }
 
+//< Initialize clock subsystem.
 static void clock_init() {
 	// DCOCLK at 8 MHz.
 	BCSCTL1 = XT2OFF | CALBC1_8MHZ;
@@ -139,77 +116,47 @@ static void clock_init() {
 	// MCLK = 8 MHz, SMCLK = 8 MHz.
 }
 
+//< Initialize the comparators.
 static void comparator_init() {
-    // Comparator A setup:
-    // CAPD.0 = 1, CAPD.3 = 1, CACTL1 = 8'b0000 010x = 0x04 (off: when enabled, 0x0E), CACTL2 = 8'b0001010x = 0x14.
-	// So CA+ = P1.0, CA- = P1.3, no reference used, comparator on, and falling edge triggers interrupt.
-	// Interrupts not enabled initially.
-    CAPD = cap_disable;
-    CACTL2 = cap_ctl2;
+	// Disable digital buffers on P1.0 and P1.3.
+	CAPD = CAPD0 | CAPD3;
+	// [P2CA4,P2CA0] = 01, so In+ = CA0
+	// [P2CA3,P2CA2,P2CA1] = 011, so In- = CA3.
+    CACTL2 = P2CA0 | P2CA2 | P2CA1;
+    // Turn on comparator.
     CACTL1 = CAON;
 }
 
+//< Initialize pins.
 static void pin_init() {
-    // P1.0: COMMS_COMP+ (CA0)
-    // P1.1: BSL_TX
-    // P1.2: BSL_RX
-    // P1.3:  COMMS_COMP- (CA3)
-    // P1.4: COMMS_TX (SMCLK output)
-    // P1.5: BSL_RX
-    // P1.6: 5V_Curr
-    // P1.7: 12V_Curr
-
-    // TimerA1 is used to do powerline comms. TimerA0 is used for a debugging UART.
-    // When the comparator fires, the interrupt is disabled, and the value in TA1R is read.
-    // This is then incremented to the middle of the next bit.
-    // (Note that there's some jitter here, but this is likely not a big deal at 9600 bps. In the non-debugging
-    //  case everything is halted normally). This is then written into a compare register, and the compare interrupt
-    // is enabled. When the compare interrupt goes off, we sample a bit, and increment by the bit time. This repeats
-    // 8 times, and then the last time, assuming it's 1, we disable the compare interrupt and process the byte. Then
-    // the comparator input is reenabled.
-    // So:
-    // Port 1 setup:
-    // P1DIR  = 8'b1101 1010 = 0xDA (when COMMS_TX on), 8'b11001010 = 0xCA  (when COMMS_TX off).
-    // P1SEL  = 8'b0001 0000 = 0x10
-    // P1SEL2 = 8'b0001 0000 = 0x00
-    // P1OUT  = 0x00
-    // Port 2 and 3 are by default all outputs except P3.1 and P3.7 (12v_EN).
-    // P2DIR = 0xFF
-    // P2SEL = 0x00
-    // P2SEL2 = 0x00
-    // P2OUT = 0xFF
-    // P3DIR = 8'b1111 1111 = 0xFF
-    // P3SEL = 0x00
-    // P3SEL2 = 0x00
-    // P3OUT = 0xFF
-	//P1OUT = 0x80; //Also Experimental, bit set here determines whether pullup or pulldown res is enabled (in conjunction w/ P1REN)
-	P1DIR = port1_dir;
-    P1SEL = port1_sel;
-    P1SEL2 = port1_sel2;
-    P3SEL = port3_sel; // sels set low -> GPIO, set high -> comparator. Duh
-    P3SEL2 = port3_sel2;
+    P1DIR = 0x10;
+    P1OUT |= 0x80;
+    P2SEL = 0x00;
     device_init();
 }
 
+//< Initialize sensors.
 static void sensor_init()
 {
 	ADC10CTL0=SREF_1 + REFON + ADC10ON + ADC10SHT_3 ; //1.5V ref,Ref on,64 clocks for sample
-	ADC10AE0 = analog_enable;
-
+	ADC10AE0 =0xC0;
 }
 
+//< Read a single ADC.
 static void read_adc(uint8_t ch)
 {
-	ADC10CTL1 = channels[ch] + ADC10DIV_3; // Sensor is at INCH_ch and clock/4
-
-	__delay_cycles(1000);              // Wait for reference to settle
+	ADC10CTL1 = sensor_channels[ch]; // Sensor is at INCH_ch and clock/4
+	opt_delay(331);
 	ADC10CTL0 |= ENC + ADC10SC;      // Enable Conversion
     while(ADC10CTL1 & BUSY);         // Converting...
     adc_value = ADC10MEM;                       // Store adc value
 	ADC10CTL0&=~ENC;  // Disable Conversion
+	//< Return the top 8 bits (low precision read).
+	tx_data[tx_data_ack_idx] = adc_value >> 2;
 }
 
 #pragma FUNC_NEVER_RETURNS(main)
+//< Main.
 void main(void) {
 	static unsigned char preamble_match ;
 
@@ -220,16 +167,20 @@ void main(void) {
     pin_init();
     // Set up comparator.
     comparator_init();
-	// Initialize all our static variables.
-	preamble_match = 0;
+    // Set up sensors.
+    sensor_init();
 
-	sensor_init();
+    // Initialize all our static variables.
+	preamble_match = 0;
+	simple_copy_16(tx_data, tx_template);
 
     // Main loop.
     while (1) {
+    	// Look for the preamble.
     	while (preamble_match < rx_preamble_len) {
     		if (rx_char == rx_preamble[preamble_match]) {
     			preamble_match++;
+    			// Get next character. If we're at the end, we'll fall out of the loop here.
     			get_char();
     		} else {
     			if (preamble_match) {
@@ -239,100 +190,35 @@ void main(void) {
     			}
     		}
     	}
+    	// Last received character is command.
     	cmd = rx_char;
+    	// Get argument.
     	get_char();
+    	// Last received character is argument.
     	arg = rx_char;
+    	// Get ETX.
     	get_char();
-    	if (rx_char == etx) handle_command();
+    	// Check ETX, and if it matches, handle command and send acknowledge.
+    	if (rx_char == etx) {
+    		handle_command();
+    		command_ack();
+    	}
+    	// Reset preamble count. Wait for next command.
     	preamble_match = 0;
-/*
-    	// Get the next character from the powerline comms.
-    	get_char();
-    	// Are we matching the preamble?
-    	if (preamble_match < rx_preamble_len) {
-    		// Yes: compare it to the preamble.
-    		if ( rx_char == rx_preamble[preamble_match]) {
-    			// It matches - increment.
-    			preamble_match++;
-			} else {
-				// It does not match. Check to see if it matches the first byte
-				// of the preamble instead.
-				if (rx_char == rx_preamble[0]) preamble_match = 1;
-				else preamble_match = 0;
-			}
-    	} else {
-    		// If we just read the preamble, we're now at the command step.
-    		if (preamble_match == rx_preamble_len) {
-    			cmd = rx_char;
-    			preamble_match++;
-    		}
-    		// After that comes the argument step...
-    		else if (preamble_match == rx_preamble_len + 1) {
-    			arg = rx_char;
-    			preamble_match++;
-    		}
-    		// Then check ETX, where we execute the command if it's OK.
-    		else if (preamble_match == rx_preamble_len + 2) {
-    			if (rx_char == etx) handle_command();
-    			if (rx_char == rx_preamble[0]) preamble_match = 1;
-    			else preamble_match = 0;
-    		}
-		}
-*/
     }
 }
 
-// 104 us between bits. This should be exact.
-#define UART_TBIT 104
-// Time from comparator setting up time to middle of first bit.
-#define UART_FIRST_BIT 147
-
-static void get_char() {
-	// Don't need to clear cur_char, each bit gets set/cleared deterministically.
-	CACTL1 = CAON + CAIES + CAIE;
-	_BIS_SR(LPM4_bits + GIE);
-}
-
-static void tx_char(unsigned char tx) {
-	// Stop the counter, and clear it.
-	TA1CTL = 0;
-	TA1CCR0 = UART_TBIT;
-	TA1CCTL0 = CCIE;
-	// now set it off running.
-	TA1CTL = TASSEL_2 + ID_3 + MC_1 + TACLR;
-	// Upshift by 1 (the start bit is 0), plus
-	// add the stop bit (bit 10).
-	tx_char_pending = (tx << 1) | (0x200);
-	// Sleep. We will wake up when a character has been received.
-	_BIS_SR(LPM0_bits + GIE);
-}
-
 static void command_ack() {
+	// Iterator.
 	uint8_t counter;
+	// This can be precomputed, rather than subtracting 1 from the stupid thing every time.
+	const uint8_t *const tx_data_minus_one = tx_data - 1;
 
-	// Put a bit of a pause here to let the threshold settle.
-	// This shouldn't be necessary in the end, but I don't think
-	// it makes much of a difference.
-	// 10 ms pause.
-	__delay_cycles(80000);
-	//Transmit preamble
-	for (counter=tx_preamble_len;counter!=0;counter--) {
-		tx_char(tx_preamble[counter-1]);
+	tx_data[tx_data_cmd_idx] = cmd;
+	opt_delay(26664);
+	for (counter=tx_data_len;counter;counter--) {
+		tx_char(tx_data_minus_one[counter]);
 	}
-
-	tx_char(cmd);
-	tx_char(ack_byte);
-	tx_char(etx);
-	return;
-}
-static void simple_copy_16(uint8_t *dst, const uint8_t *src) {
-	do {
-		*dst++ = *src++;
-	} while (((uint16_t) src) & 0xF);
-//	uint8_t count;
-//	for (count=16;count;count--) {
-//		*dst++ = *src++;
-//	}
 }
 
 static void device_info_flash() {
@@ -350,127 +236,87 @@ static void device_info_flash() {
 }
 
 
-// Pin configuration.
-// These are stored in infoD.
+typedef enum command_type {
+  CMD_ATTENUATOR = 0,
+  CMD_SENSOR = 2,
+  CMD_INFO = 4,
+  CMD_MISC = 6
+} command_type_t;
 
+//< Handle an incoming command.
 static void handle_command() {
-	if (cmd & 0x80) {//Write
-		// Guard against overwriting the signature or firmware version.
-		if ((cmd & 0xF) < 12)
-			device_info_buffer[cmd & 0xF] = arg;
-		ack_byte = 0;
-	} else if (cmd & 0x40) {//read
-		ack_byte = device_info_buffer[cmd & 0xF];
-	} else if (cmd & 0x20) {//flash
-		device_info_flash();
-	} else if (cmd & 0x10) { // sensor reads, assume first time it goes to else so the value can be read
-		unsigned char sensor_val = cmd & 0xF;
-		if (sensor_val ==  4) ack_byte = (adc_value & 0x3); // For lower two bits of the adc10 value, check first and then read off
-		else { // For the upper 8 bits, convert the value first
-			if (sensor_val == 3){ //If sensor 3 -> look for fault detection
-				P1REN=0x80; //Enable Pullup resistors
-				P1OUT |= 0x80;
-				ADC10AE0 = analog_enable_fault; //Set for fault detection
-				read_adc(0x02); //Read the 12v_curr line (for FLT detect)
-				ack_byte = adc_value >> 2; // Shift right by 2
-				P1REN = 0x00; //Disable pullup resistors
-				ADC10AE0 = analog_enable; //Return ADC10AE for 5 and 12v current sensing (default)
-			} else{
-			read_adc(sensor_val); // Pull out the requested channel and use as function argument
-			ack_byte = adc_value >> 2; // Shift right by 2
-			}
-		}
-	} else {
-		command_action();
-		ack_byte = 0;
-	}
-	command_ack();
-}
-
-// Command_action can be called during the initialization function.
-// That is, if you just start at cmd=4 and increment until cmd=12,
-// set 'arg' to the initialization value, and it'll handle it like a normal
-// command, without the 'ack'ing.
-static void command_action() {
+	uint8_t subcmd;
+	uint8_t flag;
+	uint8_t idx;
 	volatile uint8_t *addr;
-	uint8_t ch;
-	//uint8_t type
+	uint8_t tmp;
 
-	ch = cmd & 0x3;
-	// type = cmd & 0x0C;
-
-	// Command table:
-	// 0: set sig attenuator 0
-	// 1: set sig attenuator 1
-	// 2: set sig attenuator 2
-	// 3: set sig attenuator 3
-	// 4: set trg attenuator 0
-	// 5: set trg attenuator 1
-	// 6: set trg attenuator 2
-	// 7: set trg attenuator 3
-	// 8: enable 12V 0
-	// 9: enable 12V 1
-	//10: enable 12V 2
-	//11: enable 12V 3
-	//12: enable 5V
-	//13: enable 12V
-	//14: enable 5V
-	//15: enable 12V
-	if (!(cmd & 0x08)) {
-		// Commands 0-7 are sig/trig set commands.
-		// For the new attenuators, we need to clock in 16 bits.
-		// The low 7 bits are the data, and bit 8 is unused.
-		//
-		// Top byte, low 3 bits must be 0. All remaining are don't
-		// care. So we set the *top* bit in order to get a free
-		// counter.
-		// At this point we've lowered the chip select we want.
-		// So now load the attenuator.
-		*addr &= ~att_bit_arr[cmd & 0x7];
+	if (cmd == 0xFF) {
+		device_info_flash();
+		tx_data[tx_data_ack_idx] = 0;
+		return;
+	}
+	// The C compiler is very, very dumb.
+	// This function takes 8 bytes of space, plus the call, so 10 bytes total.
+	// If I put the logical equivalent of it here (tmp = (((cmd << 2) >> 8) & 0xFF) << 1;) it takes
+	// *52* because it pulls in the asr16 library and uses a shift-by-7. Sooo dumb.
+	tmp = get_switch_command();
+	subcmd = cmd & 0xF;
+	idx = cmd & 0x7;
+	flag = cmd & 0x10;
+	switch (__even_in_range(tmp, CMD_MISC)) {
+	case CMD_ATTENUATOR:
+		addr = att_port_arr[idx];
+		*addr &= ~att_bit_arr[idx];
 		load_attenuator();
-		*addr |= att_bit_arr[cmd & 0x7];
-		*addr &= ~att_bit_arr[cmd & 0x7];
-		// Done.
-	} else if (!(cmd & 0x04)) {
-		addr = enable_port_arr[ch];
-		if (arg) *addr |= enable_bit_arr[ch];
-		else *addr &= ~enable_bit_arr[ch];
-	} else {
-		// 5V enable.
-		if (ch & 0x1) {
-			addr = en_5v_port;
-			if (arg) *addr |= en_5v_bit; else *addr &= ~en_5v_bit;
+		*addr |= att_bit_arr[idx];
+		*addr &= ~att_bit_arr[idx];
+		tx_data[tx_data_ack_idx] = 0;
+		return;
+	case CMD_SENSOR:
+		if (subcmd > 4) {
+			tx_data[tx_data_ack_idx] = adc_value & 0x3;
+			return;
 		}
-		// 12V enable.
-		else if(ch & 0x2) {
-			addr = en_12v_port;
-			if (arg) *addr |= en_12v_bit; else *addr &= ~en_12v_bit;
-
+		if (subcmd == 3) {
+			P1REN = 0x80;
+			ADC10AE0 = 0x40;
+			subcmd = 2;
 		}
+		read_adc(subcmd);
+		tx_data[tx_data_ack_idx] = adc_value >> 2;
+		P1REN = 0x00;
+		ADC10AE0 = 0xC0;
+		return;
+	case CMD_INFO:
+		if ((flag) && (subcmd < 12)) device_info_buffer[subcmd] = arg;
+		tx_data[tx_data_ack_idx] = device_info_buffer[subcmd];
+		return;
+	case CMD_MISC:
+		addr = pwr_port_arr[idx];
+		if (arg) *addr |= pwr_bit_arr[idx];
+		else *addr &= ~pwr_bit_arr[idx];
+		tx_data[tx_data_ack_idx] = 0;
+		return;
 	}
 }
 
-void load_attenuator() {
-	volatile uint8_t *clk_port;
-	volatile uint8_t *data_port;
+inline void load_attenuator() {
 	uint16_t shift_data;
-
-	clk_port = spiclk_port;
-	data_port = spidata_port;
 
 	// Attenuator loading:
 	// LE stays low, and 16-bits of data are clocked in.
 	// Then LE for the appropriate attenuator goes high, then low.
 	shift_data = 0x8000;
 	shift_data |= arg;
-	while (arg) {
-		*clk_port &= ~spiclk_bit;
-		*data_port &= ~spidata_bit;
-		if (arg & 0x1) *data_port |= spidata_bit;
-		*clk_port |= spiclk_bit;
-		arg = arg >> 1;
+	while (shift_data) {
+		P2OUT &= ~BIT6;
+		if (shift_data & 0x1) P2OUT |= BIT7;
+		else P2OUT &= ~BIT7;
+		P2OUT |= BIT6;
+		shift_data = shift_data >> 1;
 	}
-	*clk_port &= ~spiclk_bit;
-	*data_port &= ~spidata_bit;
+	P2OUT &= ~BIT6;
+	P2OUT &= ~BIT7;
 }
 

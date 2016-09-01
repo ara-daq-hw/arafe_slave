@@ -91,7 +91,7 @@
 						</tool>
 					</fileInfo>
 					<sourceEntries>
-						<entry excluding="arafepc_pin_config_v3.c|arafepc_pin_config_v2.c|stack.c|boot.asm|main_v2.c|lnk_msp430g2553.cmd|interrupts.asm" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="arafepc_pin_config_v4.c|arafepc_pin_config_v3.c|arafepc_pin_config_v2.c|stack.c|boot.asm|main_v2.c|lnk_msp430g2553.cmd|interrupts.asm" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>

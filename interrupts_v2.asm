@@ -38,14 +38,14 @@ TIMER1_RX_ISR:
 	; Snag the comparator result right away into carry.
 	bit		#(0x01), &CACTL2
 	; Branch to our current step.
-	branch	COND_TIMER1_ISR_NEXT_STEP
+	branch	r4
 timer1_isr_bits0_to_7:
 	; Shift carry into rx_bits, and everything else down.
-	rrc.b	COND_RX_BITS
+	rrc.b	r5
 	; Is the carry bit 0? If so, we're not done. (Bit 7 was set before we started).
 	jnc		timer1_isr_bits0_to_7_continue
 	; Switch to stop bit check.
-	mov.w	#(timer1_isr_stop_bit), COND_TIMER1_ISR_NEXT_STEP
+	mov.w	#(timer1_isr_stop_bit), r4
 timer1_isr_bits0_to_7_continue:
 	; Continue. (104 is the bit time = 104 microseconds)
 	add.w	#104, &TA1CCR1
@@ -66,7 +66,7 @@ timer1_isr_stop_bit:
 	reti
 timer1_isr_stop_bit_found:
 	; Store rx_bits, it's OK.
-	mov.b	COND_RX_BITS, &rx_char
+	mov.b	r5, &rx_char
 	; Now wake up (clear CPUOFF).
 	bic.w	#(0x0010), 0(SP)
 	; and return
@@ -80,9 +80,9 @@ COMPA_ISR:
 	; Start the timer. (740 = 0x2E4 = TASSEL_2 + ID_3 + MC_2 + TACLR)
 	mov.w	#740, &TA1CTL
 	; Initialize rx_bits. Bit 7 is used to detect when we're done receiving (when it shifts into carry)
-	mov.b	#(0x80), COND_RX_BITS
+	mov.b	#(0x80), r5
 	; Initialize the first step in the Timer1 ISR to be looking for bits 0 to 7.
-	mov.w	#(timer1_isr_bits0_to_7), COND_TIMER1_ISR_NEXT_STEP
+	mov.w	#(timer1_isr_bits0_to_7), r4
 	; Enable the interrupt.
 	bis.w	#16, &TA1CCTL1
 	; And clear SCG1 + SCG0 + OSCOFF (turn on the Timer oscillator, but don't wake up).
