@@ -7,6 +7,8 @@
 #include <stdint.h>
 #include <msp430.h>
 
+
+//channel 0-3 enable ports and bits
 #define CH0_EN_PORT		P3OUT
 #define CH0_EN_BIT		BIT6
 
@@ -19,6 +21,8 @@
 #define CH3_EN_PORT 	P2OUT
 #define CH3_EN_BIT		BIT1
 
+
+//channel 0-3 trigger ports and bits
 #define TATTCS0_PORT	P2OUT
 #define TATTCS0_BIT		BIT5
 
@@ -31,6 +35,8 @@
 #define TATTCS3_PORT	P3OUT
 #define TATTCS3_BIT		BIT0
 
+
+//channel 0-3 signal ports and bits
 #define SATTCS0_PORT	P3OUT
 #define SATTCS0_BIT		BIT5
 
@@ -43,9 +49,13 @@
 #define SATTCS3_PORT	P2OUT
 #define SATTCS3_BIT		BIT0
 
+
+//5v enable port and bit
 #define EN5V_PORT		P3OUT
 #define EN5V_BIT		BIT1
 
+
+//12v enable port and bit
 #define EN12V_PORT      P3OUT
 #define EN12V_BIT       BIT7
 

@@ -11,7 +11,7 @@
  * 			2: 06/17/2015 - Also changed read to read the device_info_buffer, not device_info
  *			3: 04/28/2016 - Added sensor 12v/5v_curr sense and FLT detect
  *			4: 8/11/2016 - Bump to v1.0. Rework for RFSA3713, fix device_info bugs, guard against serial number/signature overwrite.
- *			5: 8/31/2016 - Change load attenuator function to hav correct data transfer. Reduce some functions for space purposes.
+ *			5: 8/31/2016 - Change load attenuator function to have correct data transfer. Reduce some functions for space purposes.
  *			6: 9/1/2016 - v2.0. Rework the command protocol to save space. Bugfixes.
  */
 
