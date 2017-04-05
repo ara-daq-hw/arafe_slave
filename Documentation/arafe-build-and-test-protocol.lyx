@@ -683,6 +683,301 @@ The Power and Control (PC) board provides power to the RF board as well
 \end_layout
 
 \begin_layout Subsection
+Programming the PC Board
+\end_layout
+
+\begin_layout Standard
+Programming the PC board is done via Code Composer Studio or CCS (
+\begin_inset CommandInset href
+LatexCommand href
+target "http://www.ti.com/tool/ccstudio"
+
+\end_inset
+
+).
+ The code repository for the PC board is called 
+\begin_inset Quotes eld
+\end_inset
+
+arafe_slave_2
+\begin_inset Quotes erd
+\end_inset
+
+ and is located in the 
+\begin_inset CommandInset href
+LatexCommand href
+name "ARA DAQ Github"
+target "https://github.com/ara-daq-hw/arafe_slave_v2"
+
+\end_inset
+
+.
+ I can be loaded into CCS using CCS's Git capability: File → Import → Git
+ → Projects from Git.
+\end_layout
+
+\begin_layout Standard
+To compile and upload the code to the microcontroller, you will use the
+ 10-pin header on the board.
+ If you have the 
+\begin_inset CommandInset href
+LatexCommand href
+name "TI USB FET Programmer"
+target "http://www.ti.com/tool/msp-fet430uif"
+
+\end_inset
+
+ you can use that directly.
+ Plug the FET programmer into your computer, and hit Run → Debug, which
+ should upload the code to the microcontroller.
+ If you do not have the programmer, you can use almost any of TI's development
+ boards as programmers also.
+ That is explained 
+\begin_inset CommandInset href
+LatexCommand href
+name "here"
+target "http://43oh.com/2011/11/tutorial-to-use-your-launchpad-as-a-programmer/"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset href
+LatexCommand href
+name "here"
+target "http://www.kerrywong.com/2012/04/02/using-msp430-launchpad-as-programmer/"
+
+\end_inset
+
+.
+ You will jumper between the development board TEST, RESET, GND, and 3.3V
+ to the corresponding pins on the PC board.
+ Photos of how to do this are visible in figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "programming-hookup-1"
+
+\end_inset
+
+ and figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "programming-hookup-2"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Because the PC board/slave firmware uses the microcontroller information
+ memory, CCS's default programming routine has to be altered.
+ The memory management has to be changed from 
+\begin_inset Quotes eld
+\end_inset
+
+Erase Main Memory Only
+\begin_inset Quotes erd
+\end_inset
+
+ to 
+\begin_inset Quotes eld
+\end_inset
+
+Erase Main and Information Memory.
+\begin_inset Quotes erd
+\end_inset
+
+ This can be done by doing Run → Debug Configurations → Target → MSP430x
+ → Erase Options and select 
+\begin_inset Quotes eld
+\end_inset
+
+Erase main and information memory.
+\begin_inset Quotes erd
+\end_inset
+
+ If when you try and program the board you get the following error 
+\begin_inset Quotes eld
+\end_inset
+
+MSP430: File Loader: Verification failed: Values at address 0x1000 do not
+ match Please verify target memory and memory map.
+\begin_inset Quotes erd
+\end_inset
+
+ this is the thing to correct.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename photos/programming-hookup.pdf
+	display false
+	scale 35
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+A diagram of the wire jumpering required to use a TI development board as
+ a programmer.
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "programming-hookup-1"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename photos/programming-hookup.jpg
+	display false
+	scale 10
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+A picture of programming the PC board with a TI development board at OSU.
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "programming-hookup-2"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename photos/ccs-setup-1.png
+	display false
+	scale 30
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+How to navigate to the debug configuration in CCS.
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "CCS-change-1"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename photos/ccs-setup-2.png
+	display false
+	scale 30
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+How to navigate to change the memory management in CCS.
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "CCS-change-2"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
 5V DCDC Converter Testing
 \end_layout
 
