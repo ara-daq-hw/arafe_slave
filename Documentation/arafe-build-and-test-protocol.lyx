@@ -1,0 +1,3348 @@
+#LyX 2.2 created this file. For more info see http://www.lyx.org/
+\lyxformat 508
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass article
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 1in
+\topmargin 1in
+\rightmargin 1in
+\bottommargin 1in
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+ARAFE Build and Test Manual
+\end_layout
+
+\begin_layout Author
+Brian Clark and Patrick Allison
+\end_layout
+
+\begin_layout Abstract
+In this document we will detail the procuedure for testing and debugging
+ the ARA Advanced Front End (ARAFE).
+ This includes the Power and Control (PC) boards and their associated DC-to-DC
+ converters, as well as the Radio Frequency (RF) boards.
+ We will describe how to test them as they are built to ensure they are
+ functioning properly, give example oscilloscope and network analyzer traces
+ of boards which are working correctly, as well as offer practical debugging
+ advice as the boards are built.
+\end_layout
+
+\begin_layout Section
+General Comments
+\end_layout
+
+\begin_layout Subsection
+Introduction
+\end_layout
+
+\begin_layout Standard
+A completed ARAFE module, or ARAFE quad, consists of one power and control
+ (PC) board and one radio frequency (RF) board.
+ Each RF board contains four channels of signal conditioning, with tunable
+ attenuation for signal and trigger paths.
+ As such, there are four quads per station for all sixteen antennas.
+ The four quads are controlled by one ARAFE master board.
+ Therefore, a complete ARAFE system consists of four PC boards, four RF
+ boards, and 1 master board.
+\end_layout
+
+\begin_layout Subsection
+Powering and Communicating with the Tester Boards 
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:Powering-and-Communicating-Tester"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Testing of the PC and RF board should be done with the ARAFE slave tester,
+ which is the custom red 
+\begin_inset Quotes eld
+\end_inset
+
+MSP430 Comms Test
+\begin_inset Quotes erd
+\end_inset
+
+ board in figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "comms-tester"
+
+\end_inset
+
+.
+ The communications tester provides power to the quad, and also provides
+ communications-over-power, as detailed 
+\begin_inset CommandInset href
+LatexCommand href
+name "here"
+target "https://www.dropbox.com/s/eggk51tj8gkmlpj/arafe_master_stuff.pdf?dl=0"
+
+\end_inset
+
+ and originally 
+\begin_inset CommandInset href
+LatexCommand href
+name "here"
+target "http://electronicdesign.com/communications/simple-circuit-communicates-over-low-voltage-power-lines"
+
+\end_inset
+
+.
+ So, the comms-tester powers and talks to the ARAFE quads.
+ Communication to the comms-tester is provided by a custom built USB-to-UART
+ converter, the blue board in figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "USB-to-UART"
+
+\end_inset
+
+.
+ The comms-tester and USB-to-UART bords can be plugged in to one another
+ as in figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "CommsTester_and_USBtoUART"
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Power is delivered to the comms tester by providing a 15V rail and GND to
+ J4.
+ Power is provided from the comms-tester to the quads by the SMA output,
+ or J1.
+ Communication from laptop to the USB-to-UART bridge is provided by the
+ mini-USB port, or J1.
+ All of this can be seen in the functional diagram in the top of figure
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "CommsTester_and_USBtoUART"
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename photos/MS430-CommsTester.jpg
+	display false
+	scale 7
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+A photo of the MSP 430 Comms Tester.
+ This board serves as a master to the PC slaves.
+ 
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "comms-tester"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename photos/USB-to-UART.jpg
+	display false
+	scale 7
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+A photo of the USB-to-UART converter.
+ This board serves as a USB interface between a computer (like a laptop)
+ and the MSP430 Comms Tester.
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "USB-to-UART"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename photos/CommsTester_and_USBtoUART-Diagram.jpg
+	display false
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+A photo of how to connect the MSP430 Comms Tester to the USB-to-UART converter,
+ along with a functional diagram.
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "CommsTester_and_USBtoUART"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Powering and Communicating with the PC Boards
+\end_layout
+
+\begin_layout Standard
+The PC boards are powered by +15V and GND, delivered to J1.
+ The two left pins are power, and the two right pins are GND.
+ A photo of a correct powered board can be viewed in figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "correct-power-PC"
+
+\end_inset
+
+.
+ The board can be powered either by the comms-tester described in section
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:Powering-and-Communicating-Tester"
+
+\end_inset
+
+, or can be powered directly by a DC power source.
+\end_layout
+
+\begin_layout Standard
+Since the PC board contains a microcontroller (more on that later), it is
+ equipped with two powering modes, controlled by the jumper J2.
+ The orientation of the jumper J2 controls whether board is in 
+\begin_inset Quotes eld
+\end_inset
+
+program
+\begin_inset Quotes erd
+\end_inset
+
+ mode, for programming the microcontroller via TI Code-Composer studio/
+ MSP430 FET Pro LITE, or in 
+\begin_inset Quotes eld
+\end_inset
+
+external power
+\begin_inset Quotes erd
+\end_inset
+
+ mode, for testing with external power.
+ When the left and middle pins of J2 are connected, the board is configured
+ for external power.
+ When the right and middle pins of J2 are connected, the board is configured
+ for programming.
+ The general procedure for powering the PC boards externally is the following:
+\end_layout
+
+\begin_layout Enumerate
+Jumper together the leftmost pins of J2 on the PC board (the jumper setting
+ for 
+\begin_inset Quotes eld
+\end_inset
+
+powered externally
+\begin_inset Quotes erd
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Enumerate
+Plug the USB-to-UART converter into the comms-tester.
+ Wire the 15V intput and GND from a DC power source to the comms-tester,
+ but do not turn the supply on yet.
+ A photo of all devices plugged in and ready for use is given in figure
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "PC-ready-to-test"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Enumerate
+From comms tester SMA output, deliver +15V to one of the two left pins of
+ J1 on the PC board, and GND to one of the two right pins of J1 on the PC
+ board.
+ This is most easily done by splitting the SMA output to two micrograbbers.
+\end_layout
+
+\begin_layout Enumerate
+Turn the power supply on.
+ With only the PC board as a load (including DC-DC convereters) it should
+ draw about 20 mA.
+ (The photo in figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "PC-ready-to-test"
+
+\end_inset
+
+ shows larger current draw because it was powering an alternative set-up
+ at the time.)
+\end_layout
+
+\begin_layout Standard
+The PC board is reverse bias protected, so if the board does not power up,
+ the polarity of the input is the first thing to check.
+ A photo of the board correctly connected is in figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "correct-power-PC"
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename photos/jumper-connection.jpg
+	display false
+	scale 7
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+A photo of a correctly powered PC board.
+ Red is +15V and black is GND.
+ In the upper left, you can see the left-most pins of J2 have been jumpered
+ together for 
+\begin_inset Quotes eld
+\end_inset
+
+external power
+\begin_inset Quotes erd
+\end_inset
+
+ mode.
+ Note that because we are looking at the board edge on from the top, 
+\begin_inset Quotes eld
+\end_inset
+
+left
+\begin_inset Quotes erd
+\end_inset
+
+ and 
+\begin_inset Quotes eld
+\end_inset
+
+right
+\begin_inset Quotes erd
+\end_inset
+
+ are mirrored relative to the text.
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "correct-power-PC"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename photos/Power_Comms.jpg
+	display false
+	scale 7
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+A photo of the complete power supply, USB-to-UART, and MSP430 comms-tester
+ ready for testing.
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "PC-ready-to-test"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Powering and Communicating with the RF Boards
+\end_layout
+
+\begin_layout Standard
+Powering the RF board must be done carefully.
+ Preferably, you should power the RF board only with the PC board, which
+ will protect the RF board from any under/over-votlage issues, as well as
+ reverse bias voltage.
+ If you need to directly power an RF channel, be sure to get the polarity
+ right, and to not apply more than +5V.
+ Further, because the RF board is 31 mil FR4 (to keep traces thin), and
+ because the header pins engage strongly between the PC and RF board, you
+ should avoid plugging the PC board directly into the RF board during testing.
+ Plying the two apart is difficult, and results in excessive flexing of
+ the RF board.
+ A better solution is to get a breadboard, plug in the male PC board, and
+ wire 
+\begin_inset Quotes eld
+\end_inset
+
+arduino type
+\begin_inset Quotes erd
+\end_inset
+
+ jumper wires (eg: 
+\begin_inset CommandInset href
+LatexCommand href
+target "https://www.adafruit.com/product/758"
+
+\end_inset
+
+) to the female RF board.
+ This narrower wires do not engage the female headers fully, and are much
+ easier to remove, and even more so, can be removed without flexing the
+ RF board.
+ A photo of Brian Clark's test set-up in the Ohio State lab is visible in
+ figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "arafe-test-setup"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename photos/IMG_1212.jpg
+	display false
+	scale 7
+
+\end_inset
+
+
+\begin_inset Graphics
+	filename photos/IMG_1214.jpg
+	display false
+	scale 7
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Figure of ARAFE RF testing setup at OSU.
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "arafe-test-setup"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+ARAFE Power and Control (PC) Board
+\end_layout
+
+\begin_layout Subsection
+Overview
+\end_layout
+
+\begin_layout Standard
+The Power and Control (PC) board provides power to the RF board as well
+ as controls power distrubtion downhole.
+ The board is equipped with under-over voltage protection, reverse bias
+ protection, and its central brain is a MSP430G2153 microcontroller.
+ The board contains two custom, high efficiency DCDC converters; one converter
+ steps down the 15V from the ASPS DAQ board to 5V, and the other to 12V.
+ The 5V converter powers the RFSA variable attenuators and amplifiers for
+ the RF board, while the 12V converter provides downhole power to the optical
+ zonus via bias-tee.
+ To vet a PC board, the board should be powered, and it's 5V convereter,
+ 12V converter, and micronctroller should be tested.
+\end_layout
+
+\begin_layout Subsection
+5V DCDC Converter Testing
+\end_layout
+
+\begin_layout Itemize
+Test the output of the 5V DCDC converter with a multimeter.
+ It should register +5V.
+ The output of the DCDC converter is labeled 
+\begin_inset Quotes eld
+\end_inset
+
+Vout
+\begin_inset Quotes erd
+\end_inset
+
+ in figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "DCDC"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+Using a multimeter, probe pin 3, 8, and 14, on the jumpers, ensuring they
+ are all +5V to begin.
+\end_layout
+
+\begin_layout Itemize
+Issue the command 
+\begin_inset Quotes eld
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+texttt{5v 0}
+\end_layout
+
+\end_inset
+
+
+\begin_inset Quotes erd
+\end_inset
+
+ to the slave tester command line.
+ This will turn off the 5V converter; check with the multimeter that this
+ is true.
+ The current drawn on the power supply should decrease.
+ Issue the comamnd 
+\begin_inset Quotes eld
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+texttt{5v 1}
+\end_layout
+
+\end_inset
+
+
+\begin_inset Quotes erd
+\end_inset
+
+ to re-enable the 5V converter, and ensure the multimeter registers +5V,
+ and check that the current draw on the power supply increases again.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename photos/DCDC.jpg
+	display false
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Photo of the DCDC converter with labeled inputs and outputs.
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "DCDC"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+12V DCDC Converter Testing
+\end_layout
+
+\begin_layout Itemize
+Test the output of the 12V DCDC converter with a multimeter.
+ It should register +12V.
+\end_layout
+
+\begin_layout Itemize
+Issue the command 
+\begin_inset Quotes eld
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+texttt{12v 0}
+\end_layout
+
+\end_inset
+
+
+\begin_inset Quotes erd
+\end_inset
+
+ to the slave tester command line.
+ This will turn off the 12V converter; check with the multimeter that this
+ is true.
+ The current drawn on the power supply should decrease.
+ Issue the comamnd 
+\begin_inset Quotes eld
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+texttt{12v 1}
+\end_layout
+
+\end_inset
+
+
+\begin_inset Quotes erd
+\end_inset
+
+ to re-enable the 12V converter, and ensure the multimeter registers +12V,
+ and check that the current draw on the power supply increases again.
+\end_layout
+
+\begin_layout Itemize
+Using a multimeter, probe pin 1 of J4-J7, ensuring they are all grounded
+ to begin.
+\end_layout
+
+\begin_layout Itemize
+Issue the command 
+\begin_inset Quotes eld
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+texttt{control 0 [0-3]}
+\end_layout
+
+\end_inset
+
+
+\begin_inset Quotes erd
+\end_inset
+
+ to the slave tester via command line.
+ This will enable the individual 12V lines.
+ Probe each line (0-3) in turn with a multimeter to ensure the voltage rises
+ to +12V.
+ There should also be an increase in current drawn from the power supply.
+\end_layout
+
+\begin_layout Subsection
+Microcontroller Testing 
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:Microcontroller-Testing"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The microcontroller job is to program the RFSA3713 variable attenuators
+ by toggling three analog lines: CLK (clock), DATA/SI (data), and LE (latch
+ enable).
+ The uC also allows for some current and voltage monitoring.
+ CLK and DATA are mutual to all attenuators on all channels.
+ Which attenuator will 
+\begin_inset Quotes eld
+\end_inset
+
+listen
+\begin_inset Quotes erd
+\end_inset
+
+ is controlled by setting the LE pin.
+ We want to test if the uC is issuing necessary commands, to the right attenauto
+r, by probing each of these three pins with an oscillosope, and looking
+ for the analog bits in the oscilloscope traces.
+ The pin mapping between the various inputs of the attenuators, various
+ on board jumpers, and the pin output of the uC is detailed in table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "PC-Jumper-RF-Mapping"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align left
+\begin_inset Tabular
+<lyxtabular version="3" rows="25" columns="5">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Atten Pin
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Atten Function
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Jumper Pin
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+uC Pin
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+uC Function
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+Chan 0
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+12
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Chan 0, Sig LE
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+JX-6
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+19
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Chan 0, Signal LE
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+12
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Chan 0, Trig LE
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+JX-12
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+18
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Chan 0, Trigger LE
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+13
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Chan 0, Sig and Trig Clock
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+JX-7 (SIG) & JX-13 (TRIG)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+27
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Global SPI Clock Pulse
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+14
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Chan 0, Sig and Trig Data
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+JX-5 (SIG) & JX-11 (TRIG)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+26
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Gobal SPI Data Pulse
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+Chan 1
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+12
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Chan 1, Sig LE
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+JX-6
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+16
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Chan 1, Signal LE
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+12
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Chan 1, Trig LE
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+JX-12
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+17
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Chan 1, Trigger LE
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+13
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Chan 1, Sig and Trig Clock
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+JX-7 (SIG) & JX-13 (TRIG)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+27
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Global SPI Clock Pulse
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+14
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Chan 1, Sig and Trig Data
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+JX-5 (SIG) & JX-11 (TRIG)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+26
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Gobal SPI Data Pulse
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+Chan 2
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+12
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Chan 2, Sig LE
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+JX-6
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+13
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Chan 2, Signal LE
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+12
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Chan 2, Trig LE
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+JX-12
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+12
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Chan 2, Trigger LE
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+13
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Chan2, Sig and Trig Clock
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+JX-7 (SIG) & JX-13 (TRIG)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+27
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Global SPI Clock Pulse
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+14
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Chan2, Sig and Trig Data
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+JX-5 (SIG) & JX-11 (TRIG)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+26
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Gobal SPI Data Pulse
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+Chan 3
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+12
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Chan 3, Sig LE
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+JX-6
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+10
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Chan 3, Signal LE
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+12
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Chan 3, Trig LE
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+JX-12
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+9
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Chan 3, Trigger LE
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+13
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Chan 3, Sig and Trig Clock
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+JX-7 (SIG) & JX-13 (TRIG)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+27
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Global SPI Clock Pulse
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+14
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Chan 3, Sig and Trig Data
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+JX-5 (SIG) & JX-11 (TRIG)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+26
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Gobal SPI Data Pulse
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Details of the connectivity between the RFSA pins, the jumpers on the PC/RF
+ board, and the uC.
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "PC-Jumper-RF-Mapping"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Prepare an oscilloscope with two probes.
+ 
+\end_layout
+
+\begin_layout Itemize
+Issue a command to control either the 
+\begin_inset Quotes eld
+\end_inset
+
+signal
+\begin_inset Quotes erd
+\end_inset
+
+ attenuator or the 
+\begin_inset Quotes eld
+\end_inset
+
+trigger
+\begin_inset Quotes erd
+\end_inset
+
+ attenuator.
+ The command for the signal attenuator is 
+\begin_inset Quotes eld
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+texttt{sig [channel] [setting] = sig [0-3] [0-127]}
+\end_layout
+
+\end_inset
+
+
+\begin_inset Quotes erd
+\end_inset
+
+ while the command for the trigger attenuator is 
+\begin_inset Quotes eld
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+texttt{trig [channel] [setting] = trig [0-3] [0-127]}
+\end_layout
+
+\end_inset
+
+
+\begin_inset Quotes erd
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+Check the CLK pins (J7 and J13) for every channel.
+ You should see 16 clock pulses on every pin, no matter the command or channel
+ to which the command was issued.
+ We advise setting the trigger to this pin.
+\end_layout
+
+\begin_layout Itemize
+Probe the two data pins J5 and J11 for every channel.
+ The height of the transmitted pulse should be roughy half that of the +5V
+ line.
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Should see something like the SI line on the RFSA timing diagram 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "RFSA-timing-diagram"
+
+\end_inset
+
+.
+ A picture of the oscilloscope trace is in figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "clock-and-data"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+There should be a high bit at the end of the bit train (A7) regardless of
+ the command issued.
+\end_layout
+
+\begin_layout Itemize
+Bits D7-A6 should all be low, regardless of the command issued.
+\end_layout
+
+\begin_layout Itemize
+The first bits D0-D6 should be a combination of low and high, corresponding
+ to the command issued.
+ Note that the seven bits are exactly the number required to control the
+ range of the RFSA; all 0's for setting zero, or minimal attenuation, and
+ all 1's for setting 127, or maximal attenuation.
+\end_layout
+
+\begin_layout Itemize
+One should see the same command on every data pin, no matter the command
+ or channel to which the command was issued.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Check the LE pins (J6 for signal and J12 for trigger) for every channel,
+ both signal and trigger.
+ This is where the differences between the 
+\begin_inset Quotes eld
+\end_inset
+
+sig
+\begin_inset Quotes erd
+\end_inset
+
+ and 
+\begin_inset Quotes eld
+\end_inset
+
+trig
+\begin_inset Quotes erd
+\end_inset
+
+ commands, as well as the differences between channels, is important.
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+You should see one bit after the last clock bit (see timing diagram 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "RFSA-timing-diagram"
+
+\end_inset
+
+).
+ A picture of the oscilloscope trace is in figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "clock-and-le"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+This bit should only be present in the channel to which the command was
+ issued.
+ That is, if you issue 
+\begin_inset Quotes eld
+\end_inset
+
+sig 1
+\begin_inset Quotes erd
+\end_inset
+
+ you should only see a bit on the signal attenuator pin of channel 1 (header
+ pin JX-6 of channel 1), and no other.
+ The firmware has already been debugged, so the only way this should not
+ work is if a pin is shorted incorrectly.
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename photos/RFSA-command-protocol.png
+	display false
+	scale 35
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+The bit timing diagram for programming RFSA3713 variable attenuator.
+ From 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "RFSA"
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "RFSA-timing-diagram"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename photos/arafe-pc-le-on-clock.png
+	display false
+	scale 40
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+A photo of the uC clock (yellow) and latch enable (blue) pulses on an oscillosco
+pe.
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "clock-and-le"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename photos/arafe-pc-data-on-clock.png
+	display false
+	scale 40
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+A photo of the uC clock (yellow) and data (blue) pulses on an oscilloscope.
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "clock-and-data"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Thermal Cycling and Programming the Serial Number in Flash Memory
+\end_layout
+
+\begin_layout Standard
+Each board should be thermal cycled, and the microcontroller test in section
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:Microcontroller-Testing"
+
+\end_inset
+
+ should be repeated for all channels to check for broken soldering connections.
+ Once it has passed it's thermal cyclce, the uC needs to be assigned the
+ board's serial number.
+ The uC for each PC board has onboard flash memory to store a permanent
+ serial number.
+ This means that the serial number can be recovered after deployment if
+ need be.
+ At the end of testing (post thermal cycle), a serial number should be written
+ on the board, and flashed into memory.
+ In revision four of the boards, for example, a PC board might have the
+ serial number PC4002, where the 
+\begin_inset Quotes eld
+\end_inset
+
+PC
+\begin_inset Quotes erd
+\end_inset
+
+ identifies it as a power and control board, the 
+\begin_inset Quotes eld
+\end_inset
+
+4000
+\begin_inset Quotes erd
+\end_inset
+
+ identifies it as board revision 4, and the 2 is the board specific identifier.
+ In memory, device info 10 holds the most significant byte (MSB) of the
+ serial number, and device info 11 holds the least significant byte (LSB)
+ of the serial number.
+ We want the numbering to start at 4000, which is 0x0FA0 in binary.
+ In the following example, we will program the serial number for board 4002,
+ or 0x0FA2.
+ So:
+\end_layout
+
+\begin_layout Itemize
+We set the MSB to 0x0F, which in decimal is 15.
+ So we will issue the command 
+\begin_inset Quotes eld
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+texttt{write 10 15}
+\end_layout
+
+\end_inset
+
+
+\begin_inset Quotes erd
+\end_inset
+
+.
+ Now, we have the total value as 0x0F00, which is 3840 in decimal.
+\end_layout
+
+\begin_layout Itemize
+Now, we set the LSB to 0xA2, which is decimal 162.
+ So we will issue the command 
+\begin_inset Quotes eld
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+texttt{write 11 162}
+\end_layout
+
+\end_inset
+
+
+\begin_inset Quotes erd
+\end_inset
+
+.
+ To summarize, what we have done is program the serial number to be 0x0FA2,
+ which is 0xF000 (3840 in decimal) + 0x00A0 (160 in decmial) + 0x0002 (2
+ in decimal), or 4002 total.
+ 
+\end_layout
+
+\begin_layout Itemize
+Issue the command 
+\begin_inset Quotes eld
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+texttt{flash}
+\end_layout
+
+\end_inset
+
+
+\begin_inset Quotes erd
+\end_inset
+
+ which will store the serial number in the flash memory of the uC.
+\end_layout
+
+\begin_layout Itemize
+Issue the dump command 
+\begin_inset Quotes eld
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+texttt{dump}
+\end_layout
+
+\end_inset
+
+
+\begin_inset Quotes erd
+\end_inset
+
+ which will write out the content of the flash information memory to the
+ terminal.
+ Check that the third row, right two columns reflect the serial number you
+ just programmed.
+\end_layout
+
+\begin_layout Section
+ARAFE Radio Frequency (RF) Board
+\end_layout
+
+\begin_layout Subsection
+Construction and Initial Testing
+\end_layout
+
+\begin_layout Standard
+Testing of the RF board should be done channel by channel.
+ After attaching surface mount components, testing of the RF channel requires
+ installation of 
+\end_layout
+
+\begin_layout Itemize
+an iso-rate adapter
+\end_layout
+
+\begin_layout Itemize
+a header through pin
+\end_layout
+
+\begin_layout Itemize
+an SMA.
+\end_layout
+
+\begin_layout Standard
+Here is some advice on building the boards
+\end_layout
+
+\begin_layout Itemize
+Test channel 3 first, and channel 0 last.
+ This allows you to power up the channels, while still having full access
+ to the surface mount components.
+ 
+\end_layout
+
+\begin_layout Itemize
+Even without power, the S11, S22 trigger path, S22 signal path, and S21
+ signal path all have distinct gain patters.
+ They can be observed in figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ideal-S11"
+
+\end_inset
+
+,
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ideal-sig-S22"
+
+\end_inset
+
+,
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ideal-trig-s22"
+
+\end_inset
+
+, and
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ideal-sig-s21-nopwr"
+
+\end_inset
+
+.
+ Therefore, you can actually check many of the necessary connections on
+ the board without powering it on.
+\end_layout
+
+\begin_layout Standard
+Once powered:
+\end_layout
+
+\begin_layout Itemize
+The S21 signal gain should be smooth across the band up to 
+\begin_inset Formula $\pm$
+\end_inset
+
+2dB as in figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ideal-sig-s21-pwr"
+
+\end_inset
+
+.
+ All network analyzer traces should be from channel 2 of RF4003 (this is
+ here for OSU's documentation sake).
+\end_layout
+
+\begin_layout Itemize
+The S21 trigger path will only be open once powered (this is because in
+ most couplers the couple path is DC shorted to ground).
+ The S21 gain should be as in figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "idea-trig-s21-pwr"
+
+\end_inset
+
+.
+ Note:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+The trigger path is attenuated an additional 10 dB, consistent with the
+ choice of coupler.
+\end_layout
+
+\begin_layout Itemize
+There are 
+\begin_inset Quotes eld
+\end_inset
+
+ripples
+\begin_inset Quotes erd
+\end_inset
+
+ in the response that are likely due to reflections off the coupler, and
+ potentially the SMA.
+ Given that the couple path is routed to the trigger, and the time integrator
+ functions over ~5 ns, this reflection should not affect the triggering
+ effectiveness.
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename photos/IDEAL-S11.PNG
+	display false
+	scale 45
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Ideal S11.
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "ideal-S11"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename photos/IDEAL-S22-SIG.PNG
+	display false
+	scale 45
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Ideal Signal Path S22.
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "ideal-sig-S22"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename photos/IDEAL-S22-TRIG.PNG
+	display false
+	scale 45
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Ideal Trigger Path S22.
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "ideal-trig-s22"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename photos/IDEAL-S21-SIG-NOPOWER.PNG
+	display false
+	scale 45
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Ideal non-powered signal S21.
+ Note that even with the power off, the system response can be observed
+ in the gain.
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "ideal-sig-s21-nopwr"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename photos/IDEAL-S21-SIG-POWER.PNG
+	display false
+	scale 45
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Ideal powered signal S21.
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "ideal-sig-s21-pwr"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename photos/IDEAL-S21-TRIG-POWER.PNG
+	display false
+	scale 45
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Ideal powered trigger S21.
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "idea-trig-s21-pwr"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Attenuator Testing 
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:RFAttenuator-Testing"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Now that we know the channels are working, we need to verify we can set
+ the variable attenuators.
+ The attenuators have a setting between 0 and 127, with each digit for a
+ 0.25 dB increment of the 31 dB total attenuation possible with the RFSA
+ 3713.
+ The procedure is the following:
+\end_layout
+
+\begin_layout Itemize
+Power a channel
+\end_layout
+
+\begin_layout Itemize
+Set the signal attenuation with the command: 
+\begin_inset Quotes eld
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+texttt{sig [channel] [setting] = sig [0-3] [0-127]}
+\end_layout
+
+\end_inset
+
+
+\begin_inset Quotes erd
+\end_inset
+
+ Play around with various value of attenuation, and you should see the curve
+ move up and down, as in figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sig3-example"
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Itemize
+Set the trigger attenuation with the command: 
+\begin_inset Quotes eld
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+texttt{trig [channel] [setting] = trig [0-3] [0-127]}
+\end_layout
+
+\end_inset
+
+
+\begin_inset Quotes erd
+\end_inset
+
+.
+ Play around with various value of attenuation, and you should see the curve
+ move up and down, as in figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sig3-example"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+In both cases, make sure that setting the attenuator to 
+\begin_inset Quotes eld
+\end_inset
+
+0
+\begin_inset Quotes erd
+\end_inset
+
+ results in minimal attenuation, and that setting the attenuator to 
+\begin_inset Quotes eld
+\end_inset
+
+127
+\begin_inset Quotes erd
+\end_inset
+
+ results in a reduction in the gain by 30 to 31 dB.
+\end_layout
+
+\begin_layout Standard
+Plotted system responses for channel 3 signal and trigger paths.
+ This was done for RF4001 (this is here for OSU's documentation sake).
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename photos/RF4001_SIG3.png
+	display false
+	scale 35
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Example of a signal path gain pattern in an ARAFE at several different attenuati
+on values.
+ Note that this plot was made with a LFCN-800+ low pass filter.
+ This was later replaced witha LFCN-630+ filter that has a sharper cutoff
+ above 850 MHz.
+ So the curve you observe should fall away more than 20 dB above ~850 MHz,
+ as in figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sig2-example-LFCN630"
+
+\end_inset
+
+.
+ A sign that you have chosen the wrong filter is if the gain does not fall
+ off fast enough.
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "sig3-example"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename photos/RF4003_SIG2.png
+	display false
+	scale 35
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+This is an example of the signal path gain with a correctly chosen filter,
+ the LFCN-630+.
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "sig2-example-LFCN630"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename photos/RF4001_TRIG3.png
+	display false
+	scale 35
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Example of a trigger path gain pattern in an ARAFE at several different
+ attenuation values.
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "trig3-example"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Thermal Cycle and RF Caging
+\end_layout
+
+\begin_layout Standard
+Once all RF channels are working, you should thermal cycle the boards, and
+ repeat section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:RFAttenuator-Testing"
+
+\end_inset
+
+ to ensure no solder joints have broken in thermal test.
+ If joints break, repair them.
+ Once the boards have passed their thermal test, you should attach their
+ RF cages, and give them a serial number on their silk screen.
+ Attaching cages is easiest if you solder the corners first from the outside,
+ and solder the inner pads near the headers last by poking the iron through
+ the open cage.
+ In all cases, you can use solder paste instead of a wire of solder if you
+ like.
+\end_layout
+
+\begin_layout Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+key "RFSA"
+
+\end_inset
+
+RFSA3713 Variable Attenuator Datasheet.
+ 
+\begin_inset CommandInset href
+LatexCommand href
+target "http://www.rfmd.com/store/downloads/dl/file/id/30109/rfsa3713_data_sheet.pdf"
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
