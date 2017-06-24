@@ -37,8 +37,8 @@
 \title{\vspace{-2.0cm}ARAFE Build and Test Manual}
 \author[1]{Brian Clark \thanks{clark.2668@osu.edu}}
 \author[1]{Patrick Allison \thanks{allison.122@osu.edu}}
-\author[1]{Suren Gourapura \thanks{gourapura.2@osu.edu}}
-\author[1]{Lucas Smith \thanks{smith.10444@osu.edu}}
+%\author[1]{Suren Gourapura \thanks{gourapura.2@osu.edu}}
+%\author[1]{Lucas Smith \thanks{smith.10444@osu.edu}}
 \affil[1]{\footnotesize{Department of Physics \& Center for Cosmology and Astroparticle Physics (CCAPP), The Ohio State University}}
 
 \begin{document}
@@ -46,7 +46,7 @@
 \maketitle
 
 \begin{abstract}
-In this document we will detail the procuedure for testing and debugging the ARA Advanced Front End (ARAFE). This includes the Power and Control (PC) boards and their associated DC-to-DC converters, as well as the Radio Frequency (RF) boards. We will describe how to test them as they are built to ensure they are functioning properly, give example oscilloscope and network analyzer traces of boards which are working correctly, as well as offer practical debugging advice as the boards are built. Finally, we will 
+In this document we will detail the procuedure for testing and debugging the ARA Advanced Front End (ARAFE). This includes the Power and Control (PC) boards and their associated DC-to-DC converters, as well as the Radio Frequency (RF) boards. We will describe how to test them as they are built to ensure they are functioning properly, give example oscilloscope and network analyzer traces of boards which are working correctly, as well as offer practical debugging advice as the boards are built. Finally, we detail a procedure for how the RF board s-parameter files should be measured and named, and also describe where they are stored in the data warehouse, which will be of use to data analyzers and simulators.
 \end{abstract}
 
 \tableofcontents
@@ -443,9 +443,98 @@ Plotted system responses for channel 3 signal and trigger paths. This was done f
 \subsection{Thermal Cycle and RF Caging}
 
 Once all RF channels are working, you should thermal cycle the boards, and repeat section \ref{subsec:RFAttenuator-Testing} to ensure no solder joints have broken in thermal test. If joints break, repair them. Once the boards have passed their thermal test, you should attach their RF cages, and give them a serial number on their silk screen. Attaching cages is easiest if you solder the corners first from the outside, and solder the inner pads near the headers last by poking the iron through the open cage. In all cases, you can use solder paste instead of a wire of solder if you like.
+
+\section{RF Characterization}
+
+\subsection{About the S-Parameters}
+The RF boards must be fully characterized before final integration into the DAQ. This consists of recording the complex response (phase and magnitude) of each channel of the RF board, at a variety of temperatures and attenuator settings. We should record full 2-port s-parameter (``s2p") files in an industry standard fashion, so they can be directly imported into simulation software like Qucs studio.
+
+ \subsubsection{File Storage}
+The RF characterization files are stored in the ARA Data Warehouse at the University of Wisconsin. For ARA collaborators with Cobalt access, you can find the files at ``\texttt{/data/wipac/ARA/pre-deployment/ARAFE}".
+
+There are two sub-directories. ``PROCESSED" and ``RAW". The RAW folder serves strictly as a back-up for the raw data from the Vector Network Analyzer. Analyzers and simulators should preferably use the PROCESSED data which contains the S2P touchstone files.
+
+\subsubsection{File Labelling Conventions}
+The full s-parameter files are uploaded as tar.gz files specifying the RF board, the channel and the temperature. So the naming convention is ``ARAFExxxxSIGnnnn.zip" and ``ARAFExxxxTRGnnnn.zip". ``xxxx" specifies the board, ``SIG" specifies the signal vs trigger path, and ``nnnn" specifies the temperature. ``nnnn" can be N20, N10, P00, P10, P20, or P30 for -20C, -10C, +0C, +20C, or +30C.
+
+The labelling convention in the PROCESSED files is: 
+
+``\texttt{ARAFExxxx\_SIGy\_SIGzzz\_TRGvvv\_Tnnn.s2p}".
+
+Where ``xxxx" is the name of the ARAFE quad number, so ARAFE60002 is for RF board 6002. ``y" is the channel; so 0 means RF channel 0, 3 is RF channel 3, etc. ``zzz" is the setting of the signal attenuator from 0 to 127. ``vvv" is the trigger attenuator setting from 0 to 127. ``nnn" designated the temperature; so P00 means positive 0C,  etc.
+
+The labelling convention in the RAW files (from the OSU Vector Network Analyzer) is 
+
+``\texttt{ARAFExxxx\_SIGy\_SIGzzz\_TRGvvv\_Tnnn\_SmmmGDL.CSV}", 
+
+``\texttt{ARAFExxxx\_SIGy\_SIGzzz\_TRGvvv\_Tnnn\_SmmmMAG.CSV}", 
+
+``\texttt{ARAFExxxx\_SIGy\_SIGzzz\_TRGvvv\_Tnnn\_SmmmPHS.CSV}". 
+
+Where ``xxxx" is the name of the ARAFE quad number, so ARAFE60002 is for RF board 6002. ``y" is the channel; so 0 means RF channel 0, 3 is RF channel 3, etc. ``zzz" is the setting of the signal attenuator from 0 to 127. ``vvv" is the trigger attenuator setting from 0 to 127. ``nnn" designated the temperature; so P00 means positive 0C,  etc. ``mmm" designates which s-parameter, so S21, S11, etc. ``GDL" designates the file as a group delay file, ``MAG" designated it as a log-magnitude file, and ``PHS" designates it as a phase file.
+
+These are merged into the PROCESSED S2P files described above by the procedure described in section  \ref{data_processing}.
+ 
+\subsection{Taking the S-Parameters}\label{sparams}
+
+The procedure for characterization is as follows:
+\begin{enumerate}
+\item Put the quad in a thermal chamber, and let it settle at that temperature for 2 hours. We recommend six temperatures, -20C, -10C, 0C, 10C, 20C, and 30C.
+\item After settling at that temperature, take the complex 2-port s-parameter file for every channel. This means you should take the magnitude and phase for S11, S22, S12, and S21.
+\begin{enumerate}
+\item For every signal channel, you should take the s-parameter file for the following attenuation values: 0, 8, 16, 24, 32, 40, 48, 56, 64, 72, 80, 88, 96, 104, 112, 120.
+\item For every trigger channel, you should loop over the following signal settings: 0,16,32,48,64,80,96. For each signal setting, you should loop over the following trigger settings: 0, 8, 16, 24, 32, 40, 48, 56, 64, 72, 80, 88, 96, 104, 112, 120, and for each one, record the s-parameter file.
+\end{enumerate}
+\end{enumerate}
+
+Note that following the above instructions, it means that for each signal path, there will be 16 s2p files. For each trigger path, there will be 112 files. This means that for each temperature, there will $128 \times 4 \, (\text{channels}) = 512$ files, and therefore, $512 \times 6 \, (\text{temperatures}) = 3,072$ files in total.
+
+\subsection{Measurements at OSU}
+
+\subsubsection{Procedure}
+
+At OSU, we handle this by utilizing the Astroparticle Lab Libraries (\url{https://github.com/osu-particle-astrophysics/astroparticlelab-libraries}, contact OSU for access) which are a set of python wrapper classes that use the pyVISA, Modbus, and serial libraries. At OSU, the execution of the measurement code can be done by executing \texttt{sudo python meas\_arafe\_sparameter.py} on the Cherenkov server (which you can access through the Caesar server). It is listed in appendix \ref{code}.
+
+The code has four important control functions for measurement devices in the Beatty-Connolly lab:
+\begin{itemize}
+\item Control of the Watlow F4 thermal chamber via Modbus.
+\item Control of the Agilent E5062A Vector Network Analyzer (VNA) via pyVISA/GPIB
+\item Control of the Agilent 34970 RF Multiplexer via pyVISA/GPIB
+\item Control of the ARAFE slave tester via serial
+\end{itemize}
+
+A few important notes. In order to take full s2p files with the VNA, you would normally use the included ``Touchstone" VBA program that comes with the VNA. However, the E5062A can only call a VBA file from the GUI interface. So, to automate the taking of the s-parameters, we take the gain and phase separately, and merge them into s2p files afterward. This merging described in section \ref{data_processing}.
+
+In order to take all four RF channels (sig or trig) at once, we use the Agilent 34970 RF mutiplexer. To remove the effects of this device on the S2P measurement, we perform a two-port calibration on the VNA.
+
+Saving all of the associated files for all temperatures and channels at all of the attenuations described in section \ref{sparams} (including their group delays) will consume approximately 3.5GB. Because the hard drive storage on the VNA is small, we save the files to a flash drive that has sufficient storage space.
+
+
+\subsubsection{Data Processing}\label{data_processing}
+
+To merge the RAW CSV files into the compact S2P files, we use the python programs listed in appendix \label{sig_merg} and \label{trig_merg}. They are executed by running  \texttt{python sig\_merge\_csv\_to\_s2p.py} and \texttt{python trig\_merge\_csv\_to\_s2p.py}. The code uses the Pandas libraries to merge the files, and are self documenting.
+
 \begin{thebibliography}{1}
 \bibitem{RFSA}RFSA3713 Variable Attenuator Datasheet. \href{http://www.rfmd.com/store/downloads/dl/file/id/30109/rfsa3713_data_sheet.pdf}{http://www.rfmd.com/store/downloads/dl/file/id/30109/rfsa3713\_{}data\_{}sheet.pdf}
 \end{thebibliography}
+\appendix
+\newpage
+\section{Appendix: OSU Code to Take S-Parameters} \label{code}
+\begin{tiny}
+\lstinputlisting[language=Python]{code/meas_arafe_sparameter.py}
+\end{tiny}
+
+\newpage
+\section{Appendix: Code to Merge CSV Signal Files} \label{sig_merg}
+\begin{tiny}
+\lstinputlisting[language=Python]{code/sig_merge_csv_to_s2p.py}
+\end{tiny}
+
+\newpage
+\section{Appendix: Code to Merge CSV Trigger Files} \label{trig_merg}
+\begin{tiny}
+\lstinputlisting[language=Python]{code/trig_merge_csv_to_s2p.py}
+\end{tiny}
 
 
 \end{document}

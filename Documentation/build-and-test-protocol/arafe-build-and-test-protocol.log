@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015) (preloaded format=pdflatex 2015.5.24)  23 JUN 2017 20:26
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015) (preloaded format=pdflatex 2015.5.24)  24 JUN 2017 00:39
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -445,7 +445,14 @@ Package: courier 2005/04/12 PSNFSS-v9.2a (WaS)
 LaTeX Warning: Unused global option(s):
     [letter].
 
-(./arafe-build-and-test-protocol.aux)
+(./arafe-build-and-test-protocol.aux
+
+LaTeX Warning: Label `sig_merg' multiply defined.
+
+
+LaTeX Warning: Label `trig_merg' multiply defined.
+
+)
 \openout1 = `arafe-build-and-test-protocol.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 44.
@@ -462,8 +469,7 @@ LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 44.
 LaTeX Font Info:    ... okay on input line 44.
 LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 44.
 LaTeX Font Info:    ... okay on input line 44.
-
-(/usr/local/texlive/2015/texmf-dist/tex/latex/ucs/ucsencs.def
+ (/usr/local/texlive/2015/texmf-dist/tex/latex/ucs/ucsencs.def
 File: ucsencs.def 2011/01/21 Fixes to fontencodings LGR, T3
 )
 *geometry* driver: auto-detecting
@@ -560,36 +566,36 @@ LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <10> not available
 LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <7> not available
 (Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 47.
 
-(./arafe-build-and-test-protocol.toc)
+(./arafe-build-and-test-protocol.toc [1
+
+{/usr/local/texlive/2015/texmf-var/fonts/map/pdftex/updmap/pdftex.map}])
 \tf@toc=\write4
 \openout4 = `arafe-build-and-test-protocol.toc'.
 
- [1
-
-{/usr/local/texlive/2015/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
-<photos/MS430_CommsTester.jpg, id=103, 3276.24pt x 2457.18pt>
+ [2]
+<photos/MS430_CommsTester.jpg, id=162, 3276.24pt x 2457.18pt>
 File: photos/MS430_CommsTester.jpg Graphic file (type jpg)
 
 <use photos/MS430_CommsTester.jpg>
 Package pdftex.def Info: photos/MS430_CommsTester.jpg used on input line 69.
 (pdftex.def)             Requested size: 234.8775pt x 176.14445pt.
 
-<photos/USB-to-UART.jpg, id=104, 3276.24pt x 2457.18pt>
+<photos/USB-to-UART.jpg, id=163, 3276.24pt x 2457.18pt>
 File: photos/USB-to-UART.jpg Graphic file (type jpg)
 
 <use photos/USB-to-UART.jpg>
 Package pdftex.def Info: photos/USB-to-UART.jpg used on input line 78.
 (pdftex.def)             Requested size: 234.8775pt x 176.14445pt.
 
-<photos/CommsTester_and_USBtoUART-Diagram.jpg, id=105, 556.0775pt x 517.935pt>
+<photos/CommsTester_and_USBtoUART-Diagram.jpg, id=164, 556.0775pt x 517.935pt>
 File: photos/CommsTester_and_USBtoUART-Diagram.jpg Graphic file (type jpg)
 
 <use photos/CommsTester_and_USBtoUART-Diagram.jpg>
 Package pdftex.def Info: photos/CommsTester_and_USBtoUART-Diagram.jpg used on i
 nput line 87.
 (pdftex.def)             Requested size: 352.31625pt x 328.15797pt.
- [2 <./photos/MS430_CommsTester.jpg>] [3 <./photos/USB-to-UART.jpg> <./photos/C
-ommsTester_and_USBtoUART-Diagram.jpg>] <photos/jumper-connection.jpg, id=122, 3
+ [3 <./photos/MS430_CommsTester.jpg>] [4 <./photos/USB-to-UART.jpg> <./photos/C
+ommsTester_and_USBtoUART-Diagram.jpg>] <photos/jumper-connection.jpg, id=182, 3
 276.24pt x 2457.18pt>
 File: photos/jumper-connection.jpg Graphic file (type jpg)
 
@@ -597,54 +603,54 @@ File: photos/jumper-connection.jpg Graphic file (type jpg)
 Package pdftex.def Info: photos/jumper-connection.jpg used on input line 112.
 (pdftex.def)             Requested size: 352.31625pt x 264.21669pt.
 
-<photos/Power_Comms.jpg, id=123, 3276.24pt x 2457.18pt>
+<photos/Power_Comms.jpg, id=183, 3276.24pt x 2457.18pt>
 File: photos/Power_Comms.jpg Graphic file (type jpg)
 
 <use photos/Power_Comms.jpg>
 Package pdftex.def Info: photos/Power_Comms.jpg used on input line 120.
 (pdftex.def)             Requested size: 352.31625pt x 264.21669pt.
 
-<photos/IMG_1212.jpg, id=126, 3276.24pt x 2457.18pt>
+<photos/IMG_1212.jpg, id=186, 3276.24pt x 2457.18pt>
 File: photos/IMG_1212.jpg Graphic file (type jpg)
  <use photos/IMG_1212.jpg>
 Package pdftex.def Info: photos/IMG_1212.jpg used on input line 132.
 (pdftex.def)             Requested size: 234.8775pt x 176.14445pt.
 
-<photos/IMG_1214.jpg, id=127, 3276.24pt x 2457.18pt>
+<photos/IMG_1214.jpg, id=187, 3276.24pt x 2457.18pt>
 File: photos/IMG_1214.jpg Graphic file (type jpg)
  <use photos/IMG_1214.jpg>
 Package pdftex.def Info: photos/IMG_1214.jpg used on input line 132.
 (pdftex.def)             Requested size: 234.8775pt x 176.14445pt.
 
-[4] [5 <./photos/jumper-connection.jpg> <./photos/Power_Comms.jpg>]
+[5] [6 <./photos/jumper-connection.jpg> <./photos/Power_Comms.jpg>]
 Overfull \hbox (87.57411pt too wide) in paragraph at lines 147--148
 []\OT1/cmr/m/n/12 Programming the PC board is done via Code Com-poser Stu-dio o
 r CCS ([]http://www.ti.com/tool/ccstudio[]).
  []
 
-[6 <./photos/IMG_1212.jpg> <./photos/IMG_1214.jpg>]
-<photos/programming-hookup.pdf, id=158, 742.775pt x 514.92375pt>
+[7 <./photos/IMG_1212.jpg> <./photos/IMG_1214.jpg>]
+<photos/programming-hookup.pdf, id=218, 742.775pt x 514.92375pt>
 File: photos/programming-hookup.pdf Graphic file (type pdf)
 
 <use photos/programming-hookup.pdf>
 Package pdftex.def Info: photos/programming-hookup.pdf used on input line 155.
 (pdftex.def)             Requested size: 469.75502pt x 325.66081pt.
 
-<photos/programming-hookup.jpg, id=159, 3276.24pt x 2457.18pt>
+<photos/programming-hookup.jpg, id=219, 3276.24pt x 2457.18pt>
 File: photos/programming-hookup.jpg Graphic file (type jpg)
 
 <use photos/programming-hookup.jpg>
 Package pdftex.def Info: photos/programming-hookup.jpg used on input line 164.
 (pdftex.def)             Requested size: 234.8775pt x 176.14445pt.
 
-<photos/ccs-setup-1.png, id=160, 800.9925pt x 473.77pt>
+<photos/ccs-setup-1.png, id=220, 800.9925pt x 473.77pt>
 File: photos/ccs-setup-1.png Graphic file (type png)
 
 <use photos/ccs-setup-1.png>
 Package pdftex.def Info: photos/ccs-setup-1.png used on input line 173.
 (pdftex.def)             Requested size: 352.31625pt x 208.38715pt.
 
-<photos/ccs-setup-2.png, id=162, 1206.5075pt x 717.68124pt>
+<photos/ccs-setup-2.png, id=222, 1206.5075pt x 717.68124pt>
 File: photos/ccs-setup-2.png Graphic file (type png)
 
 <use photos/ccs-setup-2.png>
@@ -658,20 +664,20 @@ LaTeX Font Info:    Try loading font information for OT1+pcr on input line 191.
 (/usr/local/texlive/2015/texmf-dist/tex/latex/psnfss/ot1pcr.fd
 File: ot1pcr.fd 2001/06/04 font definitions for OT1/pcr.
 )
-<photos/DCDC.jpg, id=164, 702.625pt x 383.4325pt>
+<photos/DCDC.jpg, id=224, 702.625pt x 383.4325pt>
 File: photos/DCDC.jpg Graphic file (type jpg)
  <use photos/DCDC.jpg>
 Package pdftex.def Info: photos/DCDC.jpg used on input line 196.
 (pdftex.def)             Requested size: 469.75502pt x 256.36017pt.
 
-[7 <./photos/programming-hookup.pdf>] [8 <./photos/programming-hookup.jpg> <./p
-hotos/ccs-setup-1.png>] [9 <./photos/ccs-setup-2.png> <./photos/DCDC.jpg>]
+[8 <./photos/programming-hookup.pdf>] [9 <./photos/programming-hookup.jpg> <./p
+hotos/ccs-setup-1.png>] [10 <./photos/ccs-setup-2.png> <./photos/DCDC.jpg>]
 Overfull \hbox (39.64456pt too wide) in paragraph at lines 216--269
 [][]  
  []
 
-[10] [11]
-<photos/RFSA-command-protocol.png, id=218, 1291.82625pt x 518.93875pt>
+[11] [12]
+<photos/RFSA-command-protocol.png, id=277, 1291.82625pt x 518.93875pt>
 File: photos/RFSA-command-protocol.png Graphic file (type png)
 
 <use photos/RFSA-command-protocol.png>
@@ -679,7 +685,7 @@ Package pdftex.def Info: photos/RFSA-command-protocol.png used on input line 29
 7.
 (pdftex.def)             Requested size: 469.75502pt x 188.70238pt.
 
-<photos/arafe-pc-le-on-clock.png, id=221, 803.0pt x 481.8pt>
+<photos/arafe-pc-le-on-clock.png, id=280, 803.0pt x 481.8pt>
 File: photos/arafe-pc-le-on-clock.png Graphic file (type png)
 
 <use photos/arafe-pc-le-on-clock.png>
@@ -687,7 +693,7 @@ Package pdftex.def Info: photos/arafe-pc-le-on-clock.png used on input line 306
 .
 (pdftex.def)             Requested size: 352.31625pt x 211.39716pt.
 
-<photos/arafe-pc-data-on-clock.png, id=222, 803.0pt x 481.8pt>
+<photos/arafe-pc-data-on-clock.png, id=281, 803.0pt x 481.8pt>
 File: photos/arafe-pc-data-on-clock.png Graphic file (type png)
 
 <use photos/arafe-pc-data-on-clock.png>
@@ -700,29 +706,29 @@ Overfull \hbox (4.69276pt too wide) in paragraph at lines 321--321
 Flash
  []
 
-[12 <./photos/RFSA-command-protocol.png>] [13 <./photos/arafe-pc-le-on-clock.pn
-g (PNG copy)> <./photos/arafe-pc-data-on-clock.png (PNG copy)>] [14]
-<photos/IDEAL-S11.PNG, id=250, 642.4pt x 481.8pt>
+[13 <./photos/RFSA-command-protocol.png>] [14 <./photos/arafe-pc-le-on-clock.pn
+g (PNG copy)> <./photos/arafe-pc-data-on-clock.png (PNG copy)>] [15]
+<photos/IDEAL-S11.PNG, id=310, 642.4pt x 481.8pt>
 File: photos/IDEAL-S11.PNG Graphic file (type png)
  <use photos/IDEAL-S11.PNG>
 Package pdftex.def Info: photos/IDEAL-S11.PNG used on input line 360.
 (pdftex.def)             Requested size: 352.31625pt x 264.24094pt.
 
-<photos/IDEAL-S22-SIG.PNG, id=251, 642.4pt x 481.8pt>
+<photos/IDEAL-S22-SIG.PNG, id=311, 642.4pt x 481.8pt>
 File: photos/IDEAL-S22-SIG.PNG Graphic file (type png)
 
 <use photos/IDEAL-S22-SIG.PNG>
 Package pdftex.def Info: photos/IDEAL-S22-SIG.PNG used on input line 368.
 (pdftex.def)             Requested size: 352.31625pt x 264.24094pt.
 
-<photos/IDEAL-S22-TRIG.PNG, id=252, 642.4pt x 481.8pt>
+<photos/IDEAL-S22-TRIG.PNG, id=312, 642.4pt x 481.8pt>
 File: photos/IDEAL-S22-TRIG.PNG Graphic file (type png)
 
 <use photos/IDEAL-S22-TRIG.PNG>
 Package pdftex.def Info: photos/IDEAL-S22-TRIG.PNG used on input line 376.
 (pdftex.def)             Requested size: 352.31625pt x 264.24094pt.
 
-<photos/IDEAL-S21-SIG-NOPOWER.PNG, id=253, 642.4pt x 481.8pt>
+<photos/IDEAL-S21-SIG-NOPOWER.PNG, id=313, 642.4pt x 481.8pt>
 File: photos/IDEAL-S21-SIG-NOPOWER.PNG Graphic file (type png)
 
 <use photos/IDEAL-S21-SIG-NOPOWER.PNG>
@@ -730,7 +736,7 @@ Package pdftex.def Info: photos/IDEAL-S21-SIG-NOPOWER.PNG used on input line 38
 4.
 (pdftex.def)             Requested size: 352.31625pt x 264.24094pt.
 
-<photos/IDEAL-S21-SIG-POWER.PNG, id=254, 642.4pt x 481.8pt>
+<photos/IDEAL-S21-SIG-POWER.PNG, id=314, 642.4pt x 481.8pt>
 File: photos/IDEAL-S21-SIG-POWER.PNG Graphic file (type png)
 
 <use photos/IDEAL-S21-SIG-POWER.PNG>
@@ -738,7 +744,7 @@ Package pdftex.def Info: photos/IDEAL-S21-SIG-POWER.PNG used on input line 393.
 
 (pdftex.def)             Requested size: 352.31625pt x 264.24094pt.
 
-<photos/IDEAL-S21-TRIG-POWER.PNG, id=255, 642.4pt x 481.8pt>
+<photos/IDEAL-S21-TRIG-POWER.PNG, id=315, 642.4pt x 481.8pt>
 File: photos/IDEAL-S21-TRIG-POWER.PNG Graphic file (type png)
 
 <use photos/IDEAL-S21-TRIG-POWER.PNG>
@@ -751,68 +757,365 @@ Overfull \hbox (1.12465pt too wide) in paragraph at lines 412--413
 value of at-ten-u-a-tion, and you should
  []
 
-[15 <./photos/IDEAL-S11.PNG>] [16 <./photos/IDEAL-S22-SIG.PNG> <./photos/IDEAL-
-S22-TRIG.PNG>] [17 <./photos/IDEAL-S21-SIG-NOPOWER.PNG> <./photos/IDEAL-S21-SIG
--POWER.PNG>] <photos/RF4001_SIG3.png, id=277, 1024.0659pt x 802.197pt>
+[16 <./photos/IDEAL-S11.PNG>] [17 <./photos/IDEAL-S22-SIG.PNG> <./photos/IDEAL-
+S22-TRIG.PNG>] [18 <./photos/IDEAL-S21-SIG-NOPOWER.PNG> <./photos/IDEAL-S21-SIG
+-POWER.PNG>] <photos/RF4001_SIG3.png, id=337, 1024.0659pt x 802.197pt>
 File: photos/RF4001_SIG3.png Graphic file (type png)
 
 <use photos/RF4001_SIG3.png>
 Package pdftex.def Info: photos/RF4001_SIG3.png used on input line 420.
 (pdftex.def)             Requested size: 352.31625pt x 275.97487pt.
 
-<photos/RF4003_SIG2.png, id=280, 1024.7886pt x 802.197pt>
+<photos/RF4003_SIG2.png, id=340, 1024.7886pt x 802.197pt>
 File: photos/RF4003_SIG2.png Graphic file (type png)
 
 <use photos/RF4003_SIG2.png>
 Package pdftex.def Info: photos/RF4003_SIG2.png used on input line 429.
 (pdftex.def)             Requested size: 352.31625pt x 275.79126pt.
 
-<photos/RF4001_TRIG3.png, id=281, 1024.0659pt x 802.197pt>
+<photos/RF4001_TRIG3.png, id=341, 1024.0659pt x 802.197pt>
 File: photos/RF4001_TRIG3.png Graphic file (type png)
 
 <use photos/RF4001_TRIG3.png>
 Package pdftex.def Info: photos/RF4001_TRIG3.png used on input line 437.
 (pdftex.def)             Requested size: 352.31625pt x 275.97487pt.
- [18 <./photos/IDEAL-S21-TRIG-POWER.PNG>] [19 <./photos/RF4001_SIG3.png>] [20 <
-./photos/RF4003_SIG2.png> <./photos/RF4001_TRIG3.png>]
-Overfull \hbox (185.09264pt too wide) in paragraph at lines 447--448
+ [19 <./photos/IDEAL-S21-TRIG-POWER.PNG>] [20 <./photos/RF4001_SIG3.png>] [21 <
+./photos/RF4003_SIG2.png> <./photos/RF4001_TRIG3.png>] [22]
+Overfull \hbox (5.70102pt too wide) in paragraph at lines 496--497
+\OT1/pcr/m/n/12 com / osu-[]particle-[]astrophysics / astroparticlelab-[]librar
+ies$[]\OT1/cmr/m/n/12 , con-tact OSU
+ []
+
+[23]
+Overfull \hbox (8.68204pt too wide) in paragraph at lines 515--516
+\OT1/cmr/m/n/12 listed in ap-pendix []and []. They are ex-e-cuted by run-ning \
+OT1/pcr/m/n/12 python sig[]merge[]csv[]to[]s2p.py
+ []
+
+
+Overfull \hbox (185.09264pt too wide) in paragraph at lines 518--519
 []\OT1/cmr/m/n/12 RFSA3713 Vari-able At-ten-u-a-tor Datasheet. []http://www.rfm
 d.com/store/downloads/dl/file/id/30109/rfsa3713[]data[]sheet.pdf[] 
  []
 
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 451.
-[21]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 451.
+[24] (/usr/local/texlive/2015/texmf-dist/tex/latex/listings/lstlang1.sty
+File: lstlang1.sty 2014/09/06 1.5e listings language file
+)
+(./code/meas_arafe_sparameter.py
+LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <6> not available
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 20.
+
+Overfull \hbox (84.64421pt too wide) in paragraph at lines 40--41
+[][][][][][][] 
+ []
+
+LaTeX Font Info:    Try loading font information for OML+cmr on input line 54.
+(/usr/local/texlive/2015/texmf-dist/tex/latex/base/omlcmr.fd
+File: omlcmr.fd 2014/09/29 v2.5h Standard LaTeX font definitions
+)
+LaTeX Font Info:    Font shape `OML/cmr/m/n' in size <6> not available
+(Font)              Font shape `OML/cmm/m/it' tried instead on input line 54.
+
+Overfull \hbox (1.04433pt too wide) in paragraph at lines 80--81
+[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][] 
+ []
+
+
+Overfull \hbox (14.24431pt too wide) in paragraph at lines 86--87
+[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][] 
+ []
+
+
+Overfull \hbox (111.04417pt too wide) in paragraph at lines 89--90
+[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][
+] 
+ []
+
+[25]
+Overfull \hbox (1.04433pt too wide) in paragraph at lines 91--92
+[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][] 
+ []
+
+
+Overfull \hbox (67.04424pt too wide) in paragraph at lines 95--96
+[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][] 
+ []
+
+
+Overfull \hbox (49.44426pt too wide) in paragraph at lines 97--98
+[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][] 
+ []
+
+
+Overfull \hbox (49.44426pt too wide) in paragraph at lines 102--104
+[][][][][][][][][][][][][][][][][][][][][] 
+ []
+
+[26]
+Overfull \hbox (93.4442pt too wide) in paragraph at lines 213--214
+[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][
+][][] 
+ []
+
+
+Overfull \hbox (93.4442pt too wide) in paragraph at lines 219--220
+[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][
+][][] 
+ []
+
+
+Overfull \hbox (93.4442pt too wide) in paragraph at lines 225--226
+[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][
+][][] 
+ []
+
+
+Overfull \hbox (111.04417pt too wide) in paragraph at lines 258--259
+[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][
+][][][][][][][][][][][] 
+ []
+
+[27]
+Overfull \hbox (5.44432pt too wide) in paragraph at lines 278--279
+[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][
+][][][][][] 
+ []
+
+
+Overfull \hbox (31.84428pt too wide) in paragraph at lines 279--280
+[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][
+][][][][][][][][] 
+ []
+
+) [28] (./code/sig_merge_csv_to_s2p.py
+LaTeX Font Info:    Font shape `OMS/cmr/m/it' in size <6> not available
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 1.
+
+Overfull \hbox (229.84401pt too wide) in paragraph at lines 15--16
+[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][
+][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
+[][][][] 
+ []
+
+
+Overfull \hbox (124.24416pt too wide) in paragraph at lines 22--23
+[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][
+][] 
+ []
+
+
+Overfull \hbox (150.64412pt too wide) in paragraph at lines 23--24
+[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][
+][][][] 
+ []
+
+
+Overfull \hbox (159.4441pt too wide) in paragraph at lines 24--25
+[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][
+][][][] 
+ []
+
+
+Overfull \hbox (155.04411pt too wide) in paragraph at lines 32--33
+[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][
+][][][][] 
+ []
+
+
+Overfull \hbox (163.8441pt too wide) in paragraph at lines 33--34
+[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][
+][][][][] 
+ []
+
+
+Overfull \hbox (155.04411pt too wide) in paragraph at lines 41--42
+[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][
+][][][][] 
+ []
+
+
+Overfull \hbox (163.8441pt too wide) in paragraph at lines 42--43
+[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][
+][][][][] 
+ []
+
+
+Overfull \hbox (155.04411pt too wide) in paragraph at lines 50--51
+[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][
+][][][][] 
+ []
+
+
+Overfull \hbox (163.8441pt too wide) in paragraph at lines 51--52
+[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][
+][][][][] 
+ []
+
+
+Overfull \hbox (661.04341pt too wide) in paragraph at lines 59--60
+[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][
+][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
+[][][][][][][][] 
+ []
+
+
+Overfull \hbox (111.04417pt too wide) in paragraph at lines 62--63
+[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][
+][][][][] 
+ []
+
+) [29] (./code/trig_merge_csv_to_s2p.py
+Overfull \hbox (234.244pt too wide) in paragraph at lines 15--16
+[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][
+][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
+[][][][] 
+ []
+
+
+Overfull \hbox (185.84407pt too wide) in paragraph at lines 23--24
+[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][
+][][][] 
+ []
+
+
+Overfull \hbox (194.64406pt too wide) in paragraph at lines 24--25
+[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][
+][][][] 
+ []
+
+
+Overfull \hbox (5.44432pt too wide) in paragraph at lines 25--26
+[][][][][][][][][][][][][][][][][][][][][][][][][][][] 
+ []
+
+
+Overfull \hbox (31.84428pt too wide) in paragraph at lines 26--27
+[][][][][][][][][][][][][][][][][][][][][][][][][][][][] 
+ []
+
+
+Overfull \hbox (190.24406pt too wide) in paragraph at lines 32--33
+[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][
+][][][][] 
+ []
+
+
+Overfull \hbox (199.04405pt too wide) in paragraph at lines 33--34
+[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][
+][][][][] 
+ []
+
+
+Overfull \hbox (5.44432pt too wide) in paragraph at lines 34--35
+[][][][][][][][][][][][][][][][][][][][][][][][][][][] 
+ []
+
+
+Overfull \hbox (31.84428pt too wide) in paragraph at lines 35--36
+[][][][][][][][][][][][][][][][][][][][][][][][][][][][] 
+ []
+
+
+Overfull \hbox (190.24406pt too wide) in paragraph at lines 41--42
+[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][
+][][][][] 
+ []
+
+
+Overfull \hbox (199.04405pt too wide) in paragraph at lines 42--43
+[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][
+][][][][] 
+ []
+
+
+Overfull \hbox (5.44432pt too wide) in paragraph at lines 43--44
+[][][][][][][][][][][][][][][][][][][][][][][][][][][] 
+ []
+
+
+Overfull \hbox (31.84428pt too wide) in paragraph at lines 44--45
+[][][][][][][][][][][][][][][][][][][][][][][][][][][][] 
+ []
+
+
+Overfull \hbox (190.24406pt too wide) in paragraph at lines 50--51
+[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][
+][][][][] 
+ []
+
+
+Overfull \hbox (199.04405pt too wide) in paragraph at lines 51--52
+[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][
+][][][][] 
+ []
+
+
+Overfull \hbox (5.44432pt too wide) in paragraph at lines 52--53
+[][][][][][][][][][][][][][][][][][][][][][][][][][][] 
+ []
+
+
+Overfull \hbox (31.84428pt too wide) in paragraph at lines 53--54
+[][][][][][][][][][][][][][][][][][][][][][][][][][][][] 
+ []
+
+
+Overfull \hbox (696.24336pt too wide) in paragraph at lines 59--60
+[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][
+][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
+[][][][][][][][] 
+ []
+
+
+Overfull \hbox (146.24413pt too wide) in paragraph at lines 62--63
+[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][
+][][][][] 
+ []
+
+)
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 540.
+ [30]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 540.
  (./arafe-build-and-test-protocol.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 451.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 451.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 540.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 540.
 Package rerunfilecheck Info: File `arafe-build-and-test-protocol.out' has not c
 hanged.
-(rerunfilecheck)             Checksum: D7A17EB92A6EC0B887B3CAF7EB22C186;1237.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 451.
+(rerunfilecheck)             Checksum: 21061318F5533A6FB6D6DAF8517138D6;2039.
+
+
+LaTeX Warning: There were multiply-defined labels.
+
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 540.
  ) 
 Here is how much of TeX's memory you used:
- 9263 strings out of 493089
- 139672 string characters out of 6134842
- 255305 words of memory out of 5000000
- 12494 multiletter control sequences out of 15000+600000
- 12543 words of font info for 49 fonts, out of 8000000 for 9000
+ 10314 strings out of 493089
+ 152792 string characters out of 6134842
+ 329297 words of memory out of 5000000
+ 13082 multiletter control sequences out of 15000+600000
+ 13204 words of font info for 51 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 42i,8n,43p,1209b,472s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 42i,8n,43p,1209b,1996s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/local/texlive/2015/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/local/t
 exlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/local/te
 xlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/local/tex
-live/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texli
-ve/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/local/texlive
-/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/local/texlive/2
-015/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/20
-15/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/local/texlive/2015
-/texmf-dist/fonts/type1/urw/courier/ucrr8a.pfb>
-Output written on arafe-build-and-test-protocol.pdf (21 pages, 24565611 bytes).
+live/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx6.pfb></usr/local/texli
+ve/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi12.pfb></usr/local/texliv
+e/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb></usr/local/texlive/
+2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texlive/20
+15/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/local/texlive/2015
+/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/local/texlive/2015/t
+exmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/local/texlive/2015/texm
+f-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2015/texmf
+-dist/fonts/type1/public/amsfonts/cm/cmsy6.pfb></usr/local/texlive/2015/texmf-d
+ist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/local/texlive/2015/texmf-dis
+t/fonts/type1/public/amsfonts/cm/cmti7.pfb></usr/local/texlive/2015/texmf-dist/
+fonts/type1/urw/courier/ucrr8a.pfb>
+Output written on arafe-build-and-test-protocol.pdf (30 pages, 24693721 bytes).
 
 PDF statistics:
- 355 PDF objects out of 1000 (max. 8388607)
- 278 compressed objects within 3 object streams
- 69 named destinations out of 1000 (max. 500000)
- 249 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 996 PDF objects out of 1000 (max. 8388607)
+ 898 compressed objects within 9 object streams
+ 512 named destinations out of 1000 (max. 500000)
+ 337 words of extra memory for PDF output out of 10000 (max. 10000000)
 
