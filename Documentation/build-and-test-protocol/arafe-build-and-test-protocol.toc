@@ -1,0 +1,16 @@
+\contentsline {section}{\numberline {1}General Comments}{2}{section.1}
+\contentsline {subsection}{\numberline {1.1}Introduction}{2}{subsection.1.1}
+\contentsline {subsection}{\numberline {1.2}Powering and Communicating with the Tester Boards }{2}{subsection.1.2}
+\contentsline {subsection}{\numberline {1.3}Powering and Communicating with the PC Boards}{2}{subsection.1.3}
+\contentsline {subsection}{\numberline {1.4}Powering and Communicating with the RF Boards}{4}{subsection.1.4}
+\contentsline {section}{\numberline {2}ARAFE Power and Control (PC) Board}{6}{section.2}
+\contentsline {subsection}{\numberline {2.1}Overview}{6}{subsection.2.1}
+\contentsline {subsection}{\numberline {2.2}Programming the PC Board}{6}{subsection.2.2}
+\contentsline {subsection}{\numberline {2.3}5V DCDC Converter Testing}{7}{subsection.2.3}
+\contentsline {subsection}{\numberline {2.4}12V DCDC Converter Testing}{10}{subsection.2.4}
+\contentsline {subsection}{\numberline {2.5}Microcontroller Testing }{10}{subsection.2.5}
+\contentsline {subsection}{\numberline {2.6}Thermal Cycling and Programming the Serial Number in Flash Memory}{12}{subsection.2.6}
+\contentsline {section}{\numberline {3}ARAFE Radio Frequency (RF) Board}{14}{section.3}
+\contentsline {subsection}{\numberline {3.1}Construction and Initial Testing}{14}{subsection.3.1}
+\contentsline {subsection}{\numberline {3.2}Attenuator Testing }{15}{subsection.3.2}
+\contentsline {subsection}{\numberline {3.3}Thermal Cycle and RF Caging}{18}{subsection.3.3}
