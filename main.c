@@ -94,6 +94,8 @@ static void device_init() {
 	P2DIR = 0xFF;
 	P3OUT = device_info[DEVICE_INFO_P3OUT];
 	P3DIR = 0xFF;
+	// Sleep ~11 ms. Each count is 3 clocks (dec+jne). This is therefore 90000 clocks. This is ~11 ms.
+	opt_delay(30000);
 	// We can now go ahead and pretend we get commands 7-0,
 	// grabbing the device_info as the argument for each one.
 	cmd = 8;
